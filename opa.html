@@ -1,0 +1,1614 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f4f4f4">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="opa">
+<title>opa · workspace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ─────────────────────────────────────────────────────────────
+   OPA · faithful cobalt
+   First principles: cleanliness, accuracy, efficiency, modularity
+   Visual: lowercase chrome, soft greys, plump radii, cobalt accent
+   ───────────────────────────────────────────────────────────── */
+
+:root {
+    --bg:           #f4f4f4;
+    --surf:         #fafafa;
+    --inset:        #ffffff;
+    --border:       #e6e6e8;
+    --border-2:    #efefef;
+    --ink:          #19191c;
+    --ink-2:        #5a5a60;
+    --ink-3:        #9b9ba1;
+    --ink-4:        #c8c8cc;
+    --accent:       #1d4ed8;
+    --accent-2:     #2563eb;
+    --accent-soft:  rgba(29, 78, 216, 0.08);
+    --accent-glow:  rgba(29, 78, 216, 0.16);
+    --warn:         #b25c00;
+    --warn-soft:    rgba(178, 92, 0, 0.08);
+    --ok:           #1d7a3a;
+    --err:          #b8243d;
+
+    --shadow:    0 1px 2px rgba(15, 18, 30, 0.04);
+    --shadow-md: 0 4px 14px rgba(15, 18, 30, 0.05), 0 1px 3px rgba(15, 18, 30, 0.04);
+    --shadow-lg: -8px 0 32px rgba(15, 18, 30, 0.08);
+
+    --r-card:    18px;
+    --r-input:   14px;
+    --r-pill:    999px;
+    --r-mini:    10px;
+
+    --mono:  'IBM Plex Mono', ui-monospace, SFMono-Regular, monospace;
+    --sans:  'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body { min-height: 100vh; min-height: 100dvh; }
+
+/* ─── lowercase chrome (data stays canonical for markdown export) ─── */
+.lc { text-transform: lowercase; }
+
+/* ───── HEAD ───── */
+.head {
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 40;
+}
+
+.head-inner {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 14px 28px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+}
+
+.brand {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink);
+    text-transform: lowercase;
+    letter-spacing: 0.02em;
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.brand .mark { display: inline-flex; align-items: center; }
+.brand .dot { color: var(--accent); margin: 0 2px; }
+.brand .sub {
+    color: var(--ink-3);
+    font-weight: 400;
+    font-size: 11px;
+}
+
+.head-actions { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
+
+.icon-btn {
+    appearance: none;
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--ink-2);
+    font-family: var(--mono);
+    font-size: 11.5px;
+    text-transform: lowercase;
+    padding: 7px 12px;
+    cursor: pointer;
+    border-radius: var(--r-pill);
+    transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
+}
+.icon-btn:hover { background: var(--surf); color: var(--ink); border-color: var(--border); }
+
+/* ───── TOOLBAR ───── */
+.toolbar {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 14px 28px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    background: var(--bg);
+    position: sticky;
+    top: 41px;
+    z-index: 30;
+}
+
+.tb-btn {
+    appearance: none;
+    background: var(--surf);
+    border: 1px solid var(--border);
+    color: var(--ink);
+    font-family: var(--mono);
+    font-size: 12px;
+    text-transform: lowercase;
+    padding: 9px 16px;
+    cursor: pointer;
+    border-radius: var(--r-pill);
+    transition: background 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+}
+.tb-btn:hover {
+    border-color: var(--ink-3);
+    background: var(--inset);
+}
+.tb-btn:active { transform: translateY(1px); }
+.tb-btn.primary {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+}
+.tb-btn.primary:hover {
+    background: var(--accent-2);
+    border-color: var(--accent-2);
+    box-shadow: 0 0 0 4px var(--accent-soft);
+}
+.tb-btn .glyph { color: var(--accent); }
+.tb-btn.primary .glyph { color: white; }
+
+.tb-status {
+    margin-left: auto;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    text-transform: lowercase;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 7px 12px;
+    border-radius: var(--r-pill);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 160ms ease, color 160ms ease;
+}
+.tb-status .pulse {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+}
+.tb-status.warn {
+    color: var(--warn);
+    background: var(--warn-soft);
+}
+.tb-status.warn .pulse {
+    background: var(--warn);
+    box-shadow: 0 0 0 3px rgba(178, 92, 0, 0.16);
+}
+.tb-status.err {
+    color: var(--err);
+    background: rgba(184, 36, 61, 0.08);
+}
+.tb-status.err .pulse {
+    background: var(--err);
+    box-shadow: 0 0 0 3px rgba(184, 36, 61, 0.16);
+}
+
+/* ───── AI OUTPUT PANEL ───── */
+.ai-panel {
+    max-width: 920px;
+    margin: 0 auto;
+    border-bottom: 1px solid var(--border);
+    background: var(--inset);
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 220ms ease;
+}
+.ai-panel.open {
+    max-height: 80vh;
+    overflow-y: auto;
+}
+.ai-panel-inner {
+    padding: 18px 28px 22px;
+    border-left: 3px solid var(--accent);
+}
+.ai-panel-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 10px;
+    gap: 12px;
+}
+.ai-panel-title {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    text-transform: lowercase;
+    color: var(--ink-2);
+    letter-spacing: 0.04em;
+}
+.ai-panel-title b { color: var(--accent); font-weight: 600; }
+.ai-panel-meta {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    color: var(--ink-3);
+    text-transform: lowercase;
+}
+.ai-panel-body {
+    font-family: var(--sans);
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--ink);
+    white-space: pre-wrap;
+}
+.ai-panel-body strong { color: var(--accent); font-weight: 600; }
+
+/* ───── MAIN ───── */
+main {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 32px 28px 80px;
+}
+
+.intro {
+    margin-bottom: 28px;
+    padding-bottom: 22px;
+    border-bottom: 1px solid var(--border);
+}
+.intro h1 {
+    font-family: var(--sans);
+    font-weight: 600;
+    font-size: 30px;
+    letter-spacing: -0.015em;
+    line-height: 1.15;
+    text-transform: lowercase;
+}
+.intro h1 em {
+    color: var(--accent);
+    font-style: normal;
+    font-weight: 500;
+}
+.intro p {
+    color: var(--ink-2);
+    font-size: 12.5px;
+    margin-top: 8px;
+    font-family: var(--mono);
+    text-transform: lowercase;
+}
+
+/* ───── SECTION ───── */
+.section {
+    margin-bottom: 18px;
+}
+
+.section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+    gap: 8px;
+    min-height: 24px;
+}
+.section-label {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    color: var(--ink-2);
+    letter-spacing: 0.06em;
+    text-transform: lowercase;
+}
+.section-label .num {
+    color: var(--ink-4);
+    margin-right: 8px;
+}
+.section-actions {
+    display: flex;
+    gap: 4px;
+    opacity: 0;
+    transition: opacity 120ms ease;
+}
+.section:hover .section-actions,
+.section:focus-within .section-actions { opacity: 1; }
+
+.mini-btn {
+    appearance: none;
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--ink-3);
+    font-family: var(--mono);
+    font-size: 10.5px;
+    text-transform: lowercase;
+    padding: 4px 9px;
+    cursor: pointer;
+    border-radius: var(--r-pill);
+    transition: color 120ms ease, background 120ms ease, border-color 120ms ease;
+}
+.mini-btn:hover {
+    color: var(--accent);
+    border-color: var(--border);
+    background: var(--surf);
+}
+
+textarea.field {
+    width: 100%;
+    background: var(--inset);
+    border: 1px solid var(--border);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.55;
+    padding: 14px 16px;
+    border-radius: var(--r-input);
+    resize: none;
+    outline: none;
+    overflow: hidden;
+    min-height: 1.55em;
+    transition: border-color 120ms ease;
+}
+textarea.field::placeholder {
+    color: var(--ink-3);
+    font-style: italic;
+}
+textarea.field:hover { border-color: var(--ink-3); }
+textarea.field:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+/* MSE group — single elevated card with rows inside */
+.group {
+    background: var(--inset);
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    padding: 18px 22px;
+    margin: 22px 0;
+    box-shadow: var(--shadow);
+}
+.group-head {
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: lowercase;
+    color: var(--ink);
+    font-weight: 500;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-2);
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+}
+.group-head .num { color: var(--ink-4); }
+
+.subsection {
+    display: grid;
+    grid-template-columns: 170px 1fr;
+    gap: 16px;
+    padding: 4px 0;
+    border-bottom: 1px dashed var(--border-2);
+    align-items: start;
+}
+.subsection:last-child { border-bottom: none; }
+.sub-label {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    text-transform: lowercase;
+    color: var(--ink-2);
+    padding-top: 12px;
+    line-height: 1.3;
+    letter-spacing: 0.04em;
+}
+
+/* Inside groups, fields shed their card — they're rows in a single card */
+.group textarea.field {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
+    padding: 8px 0;
+}
+.group textarea.field:hover { border: none; background: var(--bg); }
+.group textarea.field:focus {
+    border: none;
+    box-shadow: none;
+    background: var(--accent-soft);
+    padding: 8px 0;
+}
+
+@media (max-width: 720px) {
+    .subsection { grid-template-columns: 1fr; gap: 4px; }
+    .sub-label { padding-top: 0; }
+}
+
+/* ───── DRAWER ───── */
+.scrim {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 18, 30, 0.32);
+    backdrop-filter: blur(2px);
+    z-index: 80;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 180ms ease;
+}
+.scrim.open { opacity: 1; pointer-events: auto; }
+
+.drawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    height: 100dvh;
+    width: min(540px, 92vw);
+    background: var(--bg);
+    border-left: 1px solid var(--border);
+    z-index: 90;
+    transform: translateX(100%);
+    transition: transform 240ms cubic-bezier(.2,.6,.2,1);
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--shadow-lg);
+}
+.drawer.open { transform: translateX(0); }
+
+.drawer-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 22px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+}
+.drawer-title {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    text-transform: lowercase;
+    color: var(--ink);
+    font-weight: 500;
+    letter-spacing: 0.06em;
+}
+.drawer-title .accent { color: var(--accent); }
+
+.drawer-body {
+    padding: 20px 22px 40px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.drawer-section {
+    margin-bottom: 24px;
+    padding-bottom: 22px;
+    border-bottom: 1px dashed var(--border);
+}
+.drawer-section:last-child { border: none; }
+
+.drawer-section h3 {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    text-transform: lowercase;
+    color: var(--ink-2);
+    margin-bottom: 12px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+}
+
+.field-row { margin-bottom: 12px; }
+.field-row label {
+    display: block;
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: lowercase;
+    color: var(--ink-2);
+    margin-bottom: 6px;
+}
+.field-row input[type=text],
+.field-row input[type=password],
+.field-row select,
+.field-row textarea {
+    width: 100%;
+    background: var(--inset);
+    border: 1px solid var(--border);
+    color: var(--ink);
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.5;
+    padding: 10px 12px;
+    border-radius: var(--r-input);
+    outline: none;
+    transition: border-color 120ms ease, box-shadow 120ms ease;
+    box-shadow: var(--shadow);
+}
+.field-row textarea {
+    font-size: 12px;
+    min-height: 100px;
+    resize: vertical;
+}
+.field-row input:focus,
+.field-row select:focus,
+.field-row textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.field-row .help {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    color: var(--ink-3);
+    margin-top: 5px;
+    line-height: 1.45;
+}
+
+/* Frasario list */
+.frasario-cat { margin-bottom: 18px; }
+.frasario-cat-head {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    text-transform: lowercase;
+    color: var(--ink-2);
+    margin-bottom: 8px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--border);
+    letter-spacing: 0.06em;
+}
+.frasario-phrase {
+    padding: 10px 12px;
+    margin-bottom: 5px;
+    background: var(--inset);
+    border: 1px solid var(--border);
+    border-radius: var(--r-input);
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.5;
+    cursor: pointer;
+    transition: border-color 120ms ease, box-shadow 120ms ease;
+    box-shadow: var(--shadow);
+}
+.frasario-phrase:hover {
+    border-color: var(--accent);
+    background: var(--inset);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.frasario-empty {
+    font-style: italic;
+    color: var(--ink-3);
+    font-family: var(--sans);
+    font-size: 13.5px;
+}
+
+/* Redact preview split */
+.redact-preview {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 8px;
+}
+.redact-col h4 {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    text-transform: lowercase;
+    margin-bottom: 6px;
+    letter-spacing: 0.06em;
+}
+.redact-col h4.original { color: var(--ink-2); }
+.redact-col h4.redacted { color: var(--accent); }
+.redact-col pre {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    line-height: 1.55;
+    background: var(--inset);
+    border: 1px solid var(--border);
+    padding: 12px;
+    border-radius: var(--r-input);
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-height: 50vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow);
+}
+.redact-col mark {
+    background: var(--accent);
+    color: white;
+    padding: 1px 4px;
+    border-radius: 4px;
+    font-weight: 500;
+}
+@media (max-width: 720px) {
+    .redact-preview { grid-template-columns: 1fr; }
+    .redact-col pre { max-height: 38vh; }
+}
+
+.redact-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-top: 16px;
+}
+
+/* Questionnaire iframe */
+.q-iframe-wrap {
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    overflow: hidden;
+    background: var(--inset);
+    height: 70vh;
+    box-shadow: var(--shadow);
+}
+.q-iframe-wrap iframe { width: 100%; height: 100%; border: none; }
+
+.q-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--r-input);
+    margin-bottom: 6px;
+    cursor: pointer;
+    transition: border-color 120ms ease, box-shadow 120ms ease;
+    background: var(--inset);
+    box-shadow: var(--shadow);
+}
+.q-list-item:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.q-list-item .q-name {
+    font-family: var(--sans);
+    font-size: 14px;
+    color: var(--ink);
+}
+.q-list-item .q-meta {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    color: var(--ink-3);
+    text-transform: lowercase;
+}
+
+/* Markdown output modal */
+.modal-md {
+    background: var(--inset);
+    color: var(--ink);
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.6;
+    border: 1px solid var(--border);
+    border-radius: var(--r-card);
+    padding: 18px 20px;
+    white-space: pre-wrap;
+    max-height: 60vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow);
+}
+
+/* Section picker */
+.section-pick {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+.section-pick button {
+    text-align: left;
+    appearance: none;
+    background: var(--inset);
+    border: 1px solid var(--border);
+    color: var(--ink);
+    padding: 12px 14px;
+    font-family: var(--mono);
+    font-size: 12px;
+    text-transform: lowercase;
+    cursor: pointer;
+    border-radius: var(--r-input);
+    transition: border-color 120ms ease, box-shadow 120ms ease;
+    box-shadow: var(--shadow);
+}
+.section-pick button:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+/* Spinner */
+.spin {
+    display: inline-block;
+    width: 11px; height: 11px;
+    border: 1.5px solid var(--ink-3);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 700ms linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Toast */
+.toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--ink);
+    color: var(--bg);
+    font-family: var(--mono);
+    font-size: 11.5px;
+    text-transform: lowercase;
+    letter-spacing: 0.04em;
+    padding: 10px 16px;
+    border-radius: var(--r-pill);
+    z-index: 200;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 200ms ease, transform 200ms ease;
+    box-shadow: var(--shadow-md);
+}
+.toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* Util */
+.hidden { display: none !important; }
+::selection { background: var(--accent); color: white; }
+
+/* ───── MOBILE / iOS POLISH ───── */
+@media (max-width: 720px) {
+    .field-row input[type=text],
+    .field-row input[type=password],
+    .field-row select,
+    .field-row textarea,
+    textarea.field {
+        font-size: 16px;
+    }
+    .mini-btn {
+        padding: 8px 12px;
+        font-size: 11.5px;
+        min-height: 36px;
+    }
+    .section-actions { opacity: 1; }
+    .toolbar { padding: 12px 18px; }
+    .head-inner { padding: 12px 18px 10px; }
+    main { padding: 24px 18px 80px; }
+    .tb-status { margin-left: 0; }
+    .brand .sub { display: none; }
+}
+
+</style>
+</head>
+<body>
+
+<header class="head">
+    <div class="head-inner">
+        <div class="brand">
+            <span class="mark">opa<span class="dot">·</span>workspace</span>
+            <span class="sub">outpatient assessment</span>
+        </div>
+        <div class="head-actions">
+            <button class="icon-btn" id="btn-frasario">frasario</button>
+            <button class="icon-btn" id="btn-questionnaire">questionnaires</button>
+            <button class="icon-btn" id="btn-settings">settings</button>
+        </div>
+    </div>
+</header>
+
+<div class="toolbar">
+    <button class="tb-btn primary" id="btn-check-validity">
+        <span class="glyph">✦</span> check internal validity
+    </button>
+    <button class="tb-btn" id="btn-copy-md">
+        <span class="glyph">↓</span> copy as markdown
+    </button>
+    <button class="tb-btn" id="btn-clear">
+        <span class="glyph">↺</span> reset
+    </button>
+    <span class="tb-status" id="status">
+        <span class="pulse"></span>
+        <span id="status-text">redacted before send</span>
+    </span>
+</div>
+
+<div class="ai-panel" id="ai-panel">
+    <div class="ai-panel-inner">
+        <div class="ai-panel-head">
+            <div class="ai-panel-title"><b>ai feedback</b> · <span id="ai-fn-name">—</span></div>
+            <div style="display:flex; gap:8px; align-items:baseline;">
+                <span class="ai-panel-meta" id="ai-meta">—</span>
+                <button class="mini-btn" id="ai-panel-close">close</button>
+            </div>
+        </div>
+        <div class="ai-panel-body" id="ai-body"></div>
+    </div>
+</div>
+
+<main>
+    <div class="intro">
+        <h1>outpatient assessment <em>workspace</em></h1>
+        <p>auto-saved locally · anything sent to openai is redacted &amp; previewed</p>
+    </div>
+    <div id="form"></div>
+</main>
+
+<div class="scrim" id="scrim"></div>
+<div class="drawer" id="drawer">
+    <div class="drawer-head">
+        <div class="drawer-title" id="drawer-title">drawer</div>
+        <button class="icon-btn" id="drawer-close">close ✕</button>
+    </div>
+    <div class="drawer-body" id="drawer-body"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ─────────────────────────────────────────────────────────────
+   STATE & CONSTANTS
+   Data stored in canonical proper case for clean markdown export.
+   Visual lowercase is handled by CSS text-transform on chrome.
+   ───────────────────────────────────────────────────────────── */
+
+const LS = {
+    DRAFT:    'opa.draft.v1',
+    SETTINGS: 'opa.settings.v1',
+    FRASARIO: 'opa.frasario.v1',
+    QREG:     'opa.questionnaires.v1',
+    CACHE:    'opa.cache.v1'
+};
+
+const TEMPLATE = {
+    sections: [
+        { id: 'intervention', label: 'Intervention',
+          default: 'OPA F2F' },
+        { id: 'reason', label: 'Reason for Assessment',
+          default: '', placeholder: 'e.g. Routine follow-up; new referral from GP for…' },
+        { id: 'diagnosis', label: 'Diagnosis',
+          default: 'Current diagnosis:\n\nH/O of \n\nFamily history of - ' },
+        { id: 'medications', label: 'Medications',
+          default: 'Current medications:\nAdherence:\nSide effects:\nAllergies: ' },
+        { id: 'clinical_summary', label: 'Clinical Summary',
+          default: 'Presenting Concerns / Chief complaints\n\n' },
+        { id: 'breastfeeding', label: 'Breastfeeding or Pregnant?',
+          default: '', placeholder: 'N/A · or specify' },
+        { id: 'housing', label: 'Housing & Financials', default: '' },
+        { id: 'stressors', label: 'Stressors', default: '' },
+        { id: 'mse', label: 'Mental State Examination', group: true,
+          children: [
+            { id: 'mse_appearance',         label: 'Appearance & Behaviour',
+              default: 'WK, good eye contact, pleasant manners, good rapport.' },
+            { id: 'mse_speech',             label: 'Speech',
+              default: 'Nil impairment of speech nor pressure of speech.' },
+            { id: 'mse_agitation',          label: 'Agitation / Restlessness',
+              default: 'No restlessness observed.' },
+            { id: 'mse_anxiety',            label: 'Anxiety',
+              default: 'Denies anxiety symptoms.' },
+            { id: 'mse_irritability',       label: 'Irritability',
+              default: 'No irritability observed.' },
+            { id: 'mse_mood',               label: 'Mood & Affect',
+              default: 'Mood is subjectively, objectively\nAffect is ' },
+            { id: 'mse_thought_form',       label: 'Thought Form',
+              default: 'No formal thought disorder.' },
+            { id: 'mse_thought_content',    label: 'Thought Content',
+              default: 'No abnormal thought content.' },
+            { id: 'mse_perception',         label: 'Perception',
+              default: 'Denies perceptual disturbances including visual and auditory hallucinations. No distractibility.' },
+            { id: 'mse_suicidality',        label: 'Suicidality & Aggression',
+              default: 'Denies suicidal thoughts, intentions or plans. No NSSH. Denies thoughts of harming others.' },
+            { id: 'mse_family_suicidality', label: 'Family History of Suicidality',
+              default: 'No family history of suicide attempts.' },
+            { id: 'mse_cognition',          label: 'Cognition',
+              default: 'Cognition not formally tested but appears to be intact.' },
+            { id: 'mse_sleep_appetite',     label: 'Sleep & Appetite',
+              default: 'Sleep and appetite are well preserved.' },
+            { id: 'mse_substances',         label: 'Drugs / Alcohol',
+              default: 'Denies smoking, drinking alcohol or using drugs.' },
+            { id: 'mse_insight',            label: 'Insight & Judgment',
+              default: '', placeholder: 'Insight is… Judgment is…' },
+          ]
+        },
+        { id: 'risk', label: 'Risk Assessment',
+          default:
+`Risk formulated rather than stratified (per NICE NG225).
+
+Dynamic factors (current, modifiable — e.g. hopelessness, intent/plan, access to means, recent self-harm, substance use, sleep loss, recent losses, isolation, recent discharge): 
+
+Protective factors (e.g. reasons for living, dependants, future orientation, engagement, therapeutic alliance, social support, ambivalence): 
+
+Formulation: 
+
+Safety plan: warning signs, coping strategies, means restriction discussed.
+Crisis contacts shared: AH / GP / SPA / NHS 111 / 999 / Samaritans 116 123.` },
+        { id: 'capacity', label: 'Capacity',
+          default: 'Yes — patient has capacity to consent to and accept treatment.' },
+        { id: 'plan', label: 'Plan',
+          default: 'GP kindly ensure physical health checks as per NICE guidelines on antipsychotics, including monitoring of weight/BMI, BP, FBC, U+Es, LFTs, TFTs, HbA1c, fasting lipids, fasting glucose, prolactin, and perform annual ECG, looking specifically for QTc interval prolongation. Fasting blood glucose every 6 months.\n\nPatient aware can contact AH/GP/SPA/NHS 111 numbers if in crisis; contacts shared.\n\nOPA in 3 months.' }
+    ]
+};
+
+const DEFAULT_SETTINGS = {
+    apiKey: '',
+    model: 'gpt-4o-mini',
+    functions: {
+        check_validity: {
+            label: 'Check Internal Validity',
+            target: 'note',
+            mode: 'review',
+            systemPrompt:
+`You are a senior consultant psychiatrist auditing a draft Outpatient Assessment (OPA) note for INTERNAL VALIDITY only — i.e. logical, clinical, and medicolegal coherence within the note as written.
+
+Check, in order:
+1. Diagnostic coherence — does the working diagnosis fit the history and the MSE findings as documented? Flag any mismatch (e.g. "psychosis" diagnosis with an unremarkable MSE, or BPD framed as a mood disorder).
+2. Plan adequacy — does the plan address every concern raised in the Clinical Summary, the Risk section, and the Diagnosis? Flag silences (raised concern with no corresponding plan item).
+3. Risk & capacity — risk should be formulated, not stratified (per NICE NG225). Check that risks to self, to others, from others, and of disengagement are addressed where relevant; that static/dynamic/protective factors are weighed; that a safety plan with means restriction and crisis contacts is present; and that the formulation is internally consistent with the history and MSE. Flag stratified labels ("low/medium/high risk") used as the formulation, and any boilerplate that contradicts the clinical content (e.g. minimisation while the note describes recent self-harm). Capacity must be explicitly stated and defensible.
+4. Medication–diagnosis fit — is the prescribed medication appropriate to the documented diagnosis, with monitoring stated? Flag off-label or missing-monitoring issues.
+5. Internal contradictions — any other place where two parts of the note contradict each other.
+
+Output format: a short numbered list of findings. Each finding starts with one of: ✓ (consistent), ⚠ (potential issue), ✗ (clear inconsistency). Be specific: quote the exact phrase you're flagging. If everything checks out, say so plainly.
+
+Do NOT rewrite the note. Do NOT add new clinical content. Do NOT comment on style. Audit only.`
+        }
+    }
+};
+
+const DEFAULT_FRASARIO = {
+    categories: [
+        {
+            name: 'MSE — Appearance',
+            target: 'mse_appearance',
+            phrases: [
+                'Casually dressed, well-kempt, no abnormalities of involuntary movements.',
+                'Appropriately dressed for the season; eye contact maintained throughout.',
+                'Looked older than stated age; psychomotor retardation evident.'
+            ]
+        },
+        {
+            name: 'MSE — Mood & Affect',
+            target: 'mse_mood',
+            phrases: [
+                'Mood is subjectively low and objectively congruent. Affect reactive but blunted.',
+                'Mood is subjectively euthymic and objectively bright. Affect full range.',
+                'Mood is subjectively anxious; affect labile.'
+            ]
+        },
+        {
+            name: 'Plan — Safety-netting',
+            target: 'plan',
+            phrases: [
+                'Patient aware can contact AH/GP/SPA/NHS 111 numbers if in crisis; contacts shared.',
+                'Crisis plan reviewed; copies given to patient and GP.',
+                'Discussed early-warning signs and agreed to contact CMHT before deterioration.'
+            ]
+        }
+    ]
+};
+
+const DEFAULT_QREG = [];
+
+/* ─── STORAGE ─── */
+const Store = {
+    get(key, fallback) {
+        try {
+            const v = localStorage.getItem(key);
+            return v == null ? fallback : JSON.parse(v);
+        } catch { return fallback; }
+    },
+    set(key, val) {
+        try { localStorage.setItem(key, JSON.stringify(val)); }
+        catch (e) { console.warn('storage set failed', e); }
+    }
+};
+
+/* ─── STATE ─── */
+const State = {
+    draft:    Store.get(LS.DRAFT, {}),
+    settings: Object.assign({}, DEFAULT_SETTINGS, Store.get(LS.SETTINGS, {})),
+    frasario: Store.get(LS.FRASARIO, DEFAULT_FRASARIO),
+    qreg:     Store.get(LS.QREG, DEFAULT_QREG),
+    cache:    Store.get(LS.CACHE, {}),
+    lastFocusedField: null
+};
+State.settings.functions = Object.assign({}, DEFAULT_SETTINGS.functions, State.settings.functions || {});
+
+function saveDraft()    { Store.set(LS.DRAFT, State.draft); }
+function saveSettings() { Store.set(LS.SETTINGS, State.settings); }
+function saveFrasario() { Store.set(LS.FRASARIO, State.frasario); }
+function saveQreg()     { Store.set(LS.QREG, State.qreg); }
+function saveCache()    { Store.set(LS.CACHE, State.cache); }
+
+/* ─── UTIL ─── */
+function $(sel, root) { return (root || document).querySelector(sel); }
+function $$(sel, root) { return Array.from((root || document).querySelectorAll(sel)); }
+
+function el(tag, props, ...children) {
+    const e = document.createElement(tag);
+    if (props) {
+        for (const k in props) {
+            if (k === 'class') e.className = props[k];
+            else if (k === 'style') e.setAttribute('style', props[k]);
+            else if (k.startsWith('on')) e.addEventListener(k.slice(2), props[k]);
+            else if (k in e) e[k] = props[k];
+            else e.setAttribute(k, props[k]);
+        }
+    }
+    children.flat().forEach(c => {
+        if (c == null || c === false) return;
+        e.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+    });
+    return e;
+}
+
+function flattenSections() {
+    const out = [];
+    for (const s of TEMPLATE.sections) {
+        if (s.group) for (const c of s.children) out.push(c);
+        else out.push(s);
+    }
+    return out;
+}
+
+function getSectionMeta(id) { return flattenSections().find(s => s.id === id); }
+
+function autosize(t) {
+    t.style.height = 'auto';
+    t.style.height = (t.scrollHeight + 2) + 'px';
+}
+
+function toast(msg, ms = 1800) {
+    const t = $('#toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(t._h);
+    t._h = setTimeout(() => t.classList.remove('show'), ms);
+}
+
+function setStatus(text, kind = 'ok') {
+    $('#status-text').textContent = text;
+    const s = $('#status');
+    s.classList.remove('warn', 'err');
+    if (kind === 'warn') s.classList.add('warn');
+    if (kind === 'err')  s.classList.add('err');
+}
+
+/* ─── RENDER ─── */
+function renderForm() {
+    const root = $('#form');
+    root.innerHTML = '';
+    let n = 0;
+    for (const s of TEMPLATE.sections) {
+        if (s.group) {
+            const g = el('div', { class: 'group' });
+            n++;
+            const numStr = String(n).padStart(2, '0');
+            g.appendChild(el('div', { class: 'group-head' },
+                el('span', { class: 'num' }, numStr),
+                s.label
+            ));
+            for (const c of s.children) g.appendChild(renderSubsection(c));
+            root.appendChild(g);
+        } else {
+            n++;
+            root.appendChild(renderSection(s, n));
+        }
+    }
+    $$('textarea.field').forEach(t => {
+        t.addEventListener('input', () => {
+            State.draft[t.dataset.id] = t.value;
+            saveDraft();
+            autosize(t);
+        });
+        t.addEventListener('focus', () => { State.lastFocusedField = t.dataset.id; });
+        autosize(t);
+    });
+}
+
+function renderSection(s, n) {
+    const numStr = String(n).padStart(2, '0');
+    const value = State.draft[s.id] != null ? State.draft[s.id] : (s.default || '');
+    State.draft[s.id] = value;
+
+    const sec = el('div', { class: 'section', 'data-id': s.id });
+    sec.appendChild(el('div', { class: 'section-head' },
+        el('div', { class: 'section-label' },
+            el('span', { class: 'num' }, numStr),
+            s.label
+        ),
+        el('div', { class: 'section-actions' },
+            el('button', { class: 'mini-btn', onclick: () => openFrasario(s.id) }, '✦ frasario'),
+            el('button', { class: 'mini-btn', onclick: () => resetField(s.id) }, '↺ default'),
+            cacheHas(s.id) ? el('button', { class: 'mini-btn', style: 'color:var(--accent)', onclick: () => revertField(s.id) }, '⟲ revert') : null
+        )
+    ));
+    sec.appendChild(el('textarea', {
+        class: 'field',
+        'data-id': s.id,
+        rows: 1,
+        placeholder: s.placeholder || s.default || '',
+        value: value
+    }));
+    return sec;
+}
+
+function renderSubsection(c) {
+    const value = State.draft[c.id] != null ? State.draft[c.id] : (c.default || '');
+    State.draft[c.id] = value;
+    return el('div', { class: 'subsection', 'data-id': c.id },
+        el('div', { class: 'sub-label' }, c.label),
+        el('div', null,
+            el('textarea', {
+                class: 'field',
+                'data-id': c.id,
+                rows: 1,
+                placeholder: c.placeholder || c.default || '',
+                value: value
+            })
+        )
+    );
+}
+
+/* ─── FIELD OPS ─── */
+function resetField(id) {
+    const meta = getSectionMeta(id);
+    if (!meta) return;
+    State.draft[id] = meta.default || '';
+    saveDraft();
+    const t = $(`textarea[data-id="${id}"]`);
+    if (t) { t.value = State.draft[id]; autosize(t); }
+}
+function cacheHas(id) { return State.cache && State.cache[id] != null; }
+function cacheSet(id, prev) { State.cache[id] = prev; saveCache(); }
+function cacheClear(id) { delete State.cache[id]; saveCache(); }
+function revertField(id) {
+    if (!cacheHas(id)) return;
+    State.draft[id] = State.cache[id];
+    saveDraft();
+    cacheClear(id);
+    renderForm();
+    toast('reverted');
+}
+
+/* ─── REDACT ─── */
+const REDACT = {
+    patterns: [
+        { name: 'NHS',      re: /\b\d{3}[ \-]?\d{3}[ \-]?\d{4}\b/g,                                        rep: '[NHS]' },
+        { name: 'POSTCODE', re: /\b[A-Z]{1,2}\d[A-Z\d]?\s?\d[A-Z]{2}\b/gi,                                 rep: '[POSTCODE]' },
+        { name: 'EMAIL',    re: /\b[\w.+\-]+@[\w\-]+\.[\w.\-]+\b/g,                                        rep: '[EMAIL]' },
+        { name: 'PHONE',    re: /(?:\+44\s?|\b0)(?:\d\s?){9,10}/g,                                         rep: '[PHONE]' },
+        { name: 'DOB',      re: /\bDOB[:\s]+[^\n,;]+/gi,                                                   rep: 'DOB: [DOB]' },
+        { name: 'DATE',     re: /\b\d{1,2}[\/.\-]\d{1,2}[\/.\-]\d{2,4}\b/g,                                rep: '[DATE]' },
+        { name: 'DATE',     re: /\b\d{1,2}(?:st|nd|rd|th)?\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{2,4}\b/gi, rep: '[DATE]' },
+        { name: 'NAME',     re: /\b(?:Mr|Mrs|Ms|Miss|Dr|Prof)\.?\s+[A-Z][a-z]+(?:[\-\s][A-Z][a-z]+)?/g,    rep: '[NAME]' },
+        { name: 'NAME',     re: /\b(?:[Pp]atient)\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)?/g,                      rep: 'patient [NAME]' },
+        { name: 'ADDR',     re: /\b\d{1,4}\s+[A-Z][A-Za-z'\-]*(?:\s+[A-Z][A-Za-z'\-]*)*\s+(?:Street|St|Road|Rd|Avenue|Ave|Lane|Ln|Close|Cl|Drive|Dr|Way|Court|Ct|Place|Pl|Crescent|Cres|Terrace|Ter|Square|Sq|Gardens|Gdns)\b/g, rep: '[ADDRESS]' }
+    ],
+    apply(text) {
+        let out = text;
+        const log = [];
+        for (const p of this.patterns) {
+            out = out.replace(p.re, m => { log.push({ name: p.name, original: m }); return p.rep; });
+        }
+        return { redacted: out, log };
+    },
+    highlightOriginal(text) {
+        const merged = new RegExp(
+            this.patterns.map(p => p.re.source).join('|'),
+            'g' + (this.patterns.some(p => p.re.flags.includes('i')) ? 'i' : '')
+        );
+        return escapeHtml(text).replace(new RegExp(merged.source, merged.flags), m => `<mark>${escapeHtml(m)}</mark>`);
+    },
+    highlightRedacted(text) {
+        return escapeHtml(text).replace(/\[(NHS|POSTCODE|EMAIL|PHONE|DOB|DATE|NAME|ADDRESS)\]/g, m => `<mark>${m}</mark>`);
+    }
+};
+
+function escapeHtml(s) {
+    return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+/* ─── ASSEMBLE NOTE (markdown — uses canonical proper-case labels) ─── */
+function assembleMarkdown() {
+    const lines = [];
+    for (const s of TEMPLATE.sections) {
+        if (s.group) {
+            lines.push('');
+            lines.push(`## ${s.label}`);
+            for (const c of s.children) {
+                const v = (State.draft[c.id] || '').trim();
+                if (!v) continue;
+                lines.push('');
+                lines.push(`**${c.label}** — ${v.replace(/\n+/g, ' ')}`);
+            }
+        } else {
+            const v = (State.draft[s.id] || '').trim();
+            if (!v) continue;
+            lines.push('');
+            lines.push(`## ${s.label}`);
+            lines.push('');
+            lines.push(v);
+        }
+    }
+    return lines.join('\n').trim() + '\n';
+}
+
+/* ─── DRAWER ─── */
+function openDrawer(title, contentEl) {
+    $('#drawer-title').innerHTML = title;
+    const body = $('#drawer-body');
+    body.innerHTML = '';
+    body.appendChild(contentEl);
+    $('#drawer').classList.add('open');
+    $('#scrim').classList.add('open');
+}
+function closeDrawer() {
+    $('#drawer').classList.remove('open');
+    $('#scrim').classList.remove('open');
+}
+$('#drawer-close').addEventListener('click', closeDrawer);
+$('#scrim').addEventListener('click', closeDrawer);
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDrawer(); });
+
+/* ─── SETTINGS ─── */
+function openSettings() {
+    const wrap = el('div');
+
+    const sApi = el('div', { class: 'drawer-section' });
+    sApi.appendChild(el('h3', null, 'openai'));
+    sApi.appendChild(buildField('api key', 'password', State.settings.apiKey, (v) => {
+        State.settings.apiKey = v.trim();
+        saveSettings();
+        if (State.settings.apiKey) setStatus('redacted before send'); else setStatus('no api key set', 'warn');
+    }, 'stored in this browser only (localstorage). never logged.'));
+    sApi.appendChild(buildField('model', 'text', State.settings.model, (v) => {
+        State.settings.model = v.trim() || 'gpt-4o-mini';
+        saveSettings();
+    }, 'e.g. gpt-4o-mini · gpt-4o · gpt-4.1-mini'));
+    wrap.appendChild(sApi);
+
+    const sFns = el('div', { class: 'drawer-section' });
+    sFns.appendChild(el('h3', null, 'ai function prompts'));
+    for (const fnId in State.settings.functions) {
+        const fn = State.settings.functions[fnId];
+        const row = el('div', { class: 'field-row' });
+        row.appendChild(el('label', null, fn.label.toLowerCase() + '  ',
+            el('span', { style: 'color:var(--ink-3)' }, `(target: ${fn.target}, mode: ${fn.mode})`)
+        ));
+        const ta = el('textarea', { rows: 12 });
+        ta.value = fn.systemPrompt;
+        ta.addEventListener('input', () => {
+            State.settings.functions[fnId].systemPrompt = ta.value;
+            saveSettings();
+        });
+        row.appendChild(ta);
+        sFns.appendChild(row);
+    }
+    wrap.appendChild(sFns);
+
+    const sFra = el('div', { class: 'drawer-section' });
+    sFra.appendChild(el('h3', null, 'frasario (json)'));
+    const fraTa = el('textarea', { rows: 8 });
+    fraTa.value = JSON.stringify(State.frasario, null, 2);
+    sFra.appendChild(el('div', { class: 'field-row' }, fraTa,
+        el('div', { class: 'help' }, 'edit & save to update phrasebook. refined later.')
+    ));
+    sFra.appendChild(el('button', { class: 'tb-btn', onclick: () => {
+        try {
+            State.frasario = JSON.parse(fraTa.value);
+            saveFrasario();
+            toast('frasario saved');
+        } catch (e) { toast('invalid json'); }
+    }}, 'save frasario'));
+    wrap.appendChild(sFra);
+
+    const sQ = el('div', { class: 'drawer-section' });
+    sQ.appendChild(el('h3', null, 'questionnaire registry'));
+    const qTa = el('textarea', { rows: 6 });
+    qTa.value = JSON.stringify(State.qreg, null, 2);
+    sQ.appendChild(el('div', { class: 'field-row' }, qTa,
+        el('div', { class: 'help' }, 'array of {id, label, url}. url must be reachable from this page. the page must postmessage({type:"opa-result", prose:"..."}, "*") on completion.')
+    ));
+    sQ.appendChild(el('button', { class: 'tb-btn', onclick: () => {
+        try {
+            State.qreg = JSON.parse(qTa.value);
+            saveQreg();
+            toast('registry saved');
+        } catch (e) { toast('invalid json'); }
+    }}, 'save registry'));
+    wrap.appendChild(sQ);
+
+    const sDan = el('div', { class: 'drawer-section' });
+    sDan.appendChild(el('h3', null, 'local data'));
+    sDan.appendChild(el('div', { class: 'field-row help' },
+        'all data lives in localstorage on this device.'));
+    sDan.appendChild(el('button', { class: 'tb-btn', onclick: () => {
+        if (!confirm('clear all local data (draft, settings, frasario, registry, cache)?')) return;
+        Object.values(LS).forEach(k => localStorage.removeItem(k));
+        location.reload();
+    }}, 'wipe all local data'));
+    wrap.appendChild(sDan);
+
+    openDrawer('<span class="accent">·</span> settings', wrap);
+}
+
+function buildField(label, type, value, onChange, help) {
+    const row = el('div', { class: 'field-row' });
+    row.appendChild(el('label', null, label));
+    const inp = el('input', { type: type, value: value || '' });
+    inp.addEventListener('input', () => onChange(inp.value));
+    row.appendChild(inp);
+    if (help) row.appendChild(el('div', { class: 'help' }, help));
+    return row;
+}
+
+$('#btn-settings').addEventListener('click', openSettings);
+
+/* ─── FRASARIO ─── */
+function openFrasario(targetSectionId) {
+    const wrap = el('div');
+    if (!State.frasario.categories || !State.frasario.categories.length) {
+        wrap.appendChild(el('div', { class: 'frasario-empty' },
+            'no phrases yet. add them in settings → frasario.'));
+    } else {
+        for (const cat of State.frasario.categories) {
+            const isMatch = !targetSectionId || cat.target === targetSectionId;
+            const cWrap = el('div', { class: 'frasario-cat' });
+            cWrap.appendChild(el('div', { class: 'frasario-cat-head' },
+                cat.name + (cat.target ? ` · ${cat.target}` : '')));
+            for (const phrase of (cat.phrases || [])) {
+                cWrap.appendChild(el('div', {
+                    class: 'frasario-phrase',
+                    onclick: () => insertPhrase(phrase, targetSectionId || cat.target)
+                }, phrase));
+            }
+            if (!isMatch) cWrap.style.opacity = '0.55';
+            wrap.appendChild(cWrap);
+        }
+    }
+    openDrawer('<span class="accent">·</span> frasario' +
+        (targetSectionId ? ` <span style="color:var(--ink-3); font-weight:400">→ ${targetSectionId}</span>` : ''),
+        wrap);
+}
+
+function insertPhrase(phrase, targetSectionId) {
+    let id = targetSectionId || State.lastFocusedField;
+    if (!id) {
+        return openSectionPicker((picked) => {
+            doInsert(picked, phrase);
+            closeDrawer();
+        });
+    }
+    doInsert(id, phrase);
+    closeDrawer();
+}
+
+function doInsert(id, phrase) {
+    const t = $(`textarea[data-id="${id}"]`);
+    if (!t) { toast('field not found'); return; }
+    const start = t.selectionStart, end = t.selectionEnd;
+    const before = t.value.slice(0, start);
+    const after = t.value.slice(end);
+    const sep = before && !before.endsWith('\n') && !before.endsWith(' ') ? ' ' : '';
+    const newVal = before + sep + phrase + after;
+    t.value = newVal;
+    t.focus();
+    const pos = start + sep.length + phrase.length;
+    t.setSelectionRange(pos, pos);
+    State.draft[id] = newVal;
+    saveDraft();
+    autosize(t);
+    toast(`inserted into ${id}`);
+}
+
+function openSectionPicker(onPick) {
+    const wrap = el('div', { class: 'section-pick' });
+    for (const s of flattenSections()) {
+        wrap.appendChild(el('button', { onclick: () => onPick(s.id) }, s.label));
+    }
+    openDrawer('<span class="accent">·</span> pick section', wrap);
+}
+
+$('#btn-frasario').addEventListener('click', () => openFrasario(null));
+
+/* ─── QUESTIONNAIRES ─── */
+function openQuestionnaires() {
+    const wrap = el('div');
+    if (!State.qreg.length) {
+        wrap.appendChild(el('div', { class: 'frasario-empty' },
+            'no questionnaires registered. add them in settings → questionnaire registry.'));
+    } else {
+        for (const q of State.qreg) {
+            wrap.appendChild(el('div', {
+                class: 'q-list-item',
+                onclick: () => launchQuestionnaire(q)
+            },
+                el('div', { class: 'q-name' }, q.label),
+                el('div', { class: 'q-meta' }, q.id)
+            ));
+        }
+    }
+    openDrawer('<span class="accent">·</span> questionnaires', wrap);
+}
+
+function launchQuestionnaire(q) {
+    const wrap = el('div');
+    wrap.appendChild(el('div', { class: 'field-row help', style: 'margin-bottom:10px' },
+        `loading ${q.label}. complete the questionnaire — the result will return automatically. press esc to cancel.`));
+    const ifWrap = el('div', { class: 'q-iframe-wrap' });
+    const iframe = el('iframe', { src: q.url });
+    ifWrap.appendChild(iframe);
+    wrap.appendChild(ifWrap);
+    openDrawer(`<span class="accent">·</span> ${q.label.toLowerCase()}`, wrap);
+}
+
+window.addEventListener('message', (ev) => {
+    const data = ev.data;
+    if (!data || data.type !== 'opa-result' || typeof data.prose !== 'string') return;
+    closeDrawer();
+    setTimeout(() => {
+        openSectionPicker((id) => {
+            doInsert(id, data.prose);
+            closeDrawer();
+            toast('questionnaire result inserted');
+        });
+    }, 250);
+});
+
+$('#btn-questionnaire').addEventListener('click', openQuestionnaires);
+
+/* ─── AI ─── */
+async function runAIFunction(fnId) {
+    const fn = State.settings.functions[fnId];
+    if (!fn) { toast('function not configured'); return; }
+    if (!State.settings.apiKey) {
+        toast('set openai api key in settings');
+        openSettings();
+        return;
+    }
+
+    let payload, sourceLabel;
+    if (fn.target === 'note') {
+        payload = assembleMarkdown();
+        sourceLabel = 'full note';
+    } else {
+        const id = State.lastFocusedField;
+        if (!id) { toast('click into a section first'); return; }
+        payload = State.draft[id] || '';
+        sourceLabel = id;
+    }
+
+    const { redacted, log } = REDACT.apply(payload);
+    const ok = await showRedactPreview(payload, redacted, log, sourceLabel, fn.label);
+    if (!ok) return;
+
+    setStatus('sending to openai…', 'warn');
+    const resp = await callOpenAI(fn.systemPrompt, redacted);
+    if (resp.error) {
+        setStatus('error', 'err');
+        showAIPanel(fn.label, sourceLabel, '', `**Error:** ${resp.error}`);
+        return;
+    }
+    setStatus('redacted before send');
+    showAIPanel(fn.label, sourceLabel, resp.usage, resp.text);
+}
+
+function showRedactPreview(original, redacted, log, sourceLabel, fnLabel) {
+    return new Promise((resolve) => {
+        const wrap = el('div');
+        wrap.appendChild(el('div', { class: 'field-row help', style: 'margin-bottom:14px' },
+            `function: ${fnLabel.toLowerCase()}. source: ${sourceLabel}. items redacted: ${log.length}.`));
+
+        const grid = el('div', { class: 'redact-preview' });
+        const colA = el('div', { class: 'redact-col' });
+        colA.appendChild(el('h4', { class: 'original' }, 'original (not sent)'));
+        const preA = el('pre');
+        preA.innerHTML = REDACT.highlightOriginal(original);
+        colA.appendChild(preA);
+
+        const colB = el('div', { class: 'redact-col' });
+        colB.appendChild(el('h4', { class: 'redacted' }, 'redacted (will be sent)'));
+        const preB = el('pre');
+        preB.innerHTML = REDACT.highlightRedacted(redacted);
+        colB.appendChild(preB);
+
+        grid.appendChild(colA);
+        grid.appendChild(colB);
+        wrap.appendChild(grid);
+
+        const actions = el('div', { class: 'redact-actions' });
+        actions.appendChild(el('button', {
+            class: 'tb-btn',
+            onclick: () => { closeDrawer(); resolve(false); }
+        }, 'cancel'));
+        actions.appendChild(el('button', {
+            class: 'tb-btn primary',
+            onclick: () => { closeDrawer(); resolve(true); }
+        }, 'send to openai →'));
+        wrap.appendChild(actions);
+
+        openDrawer('<span class="accent">·</span> redact preview', wrap);
+    });
+}
+
+async function callOpenAI(systemPrompt, userContent) {
+    try {
+        const r = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${State.settings.apiKey}`
+            },
+            body: JSON.stringify({
+                model: State.settings.model,
+                messages: [
+                    { role: 'system', content: systemPrompt },
+                    { role: 'user',   content: userContent }
+                ],
+                temperature: 0.2
+            })
+        });
+        if (!r.ok) {
+            const errBody = await r.text();
+            return { error: `${r.status} ${r.statusText} — ${errBody.slice(0, 200)}` };
+        }
+        const data = await r.json();
+        const text = data.choices?.[0]?.message?.content || '(empty response)';
+        const usage = data.usage ? `${data.usage.total_tokens} tokens` : '';
+        return { text, usage };
+    } catch (e) {
+        return { error: e.message };
+    }
+}
+
+function showAIPanel(fnLabel, sourceLabel, usage, body) {
+    $('#ai-fn-name').textContent = fnLabel.toLowerCase();
+    $('#ai-meta').textContent = [sourceLabel, usage].filter(Boolean).join(' · ');
+    const rendered = escapeHtml(body)
+        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    $('#ai-body').innerHTML = rendered;
+    $('#ai-panel').classList.add('open');
+    $('#ai-panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+$('#ai-panel-close').addEventListener('click', () => {
+    $('#ai-panel').classList.remove('open');
+});
+
+$('#btn-check-validity').addEventListener('click', () => runAIFunction('check_validity'));
+
+/* ─── COPY MARKDOWN ─── */
+$('#btn-copy-md').addEventListener('click', async () => {
+    const md = assembleMarkdown();
+    try {
+        await navigator.clipboard.writeText(md);
+        toast('markdown copied');
+    } catch {
+        const wrap = el('div');
+        wrap.appendChild(el('div', { class: 'modal-md' }, md));
+        openDrawer('<span class="accent">·</span> markdown', wrap);
+    }
+});
+
+/* ─── RESET ─── */
+$('#btn-clear').addEventListener('click', () => {
+    if (!confirm('reset all sections to defaults? your draft will be cleared.')) return;
+    State.draft = {};
+    State.cache = {};
+    saveDraft(); saveCache();
+    renderForm();
+    toast('reset to defaults');
+});
+
+/* ─── INIT ─── */
+renderForm();
+if (State.settings.apiKey) setStatus('redacted before send');
+else setStatus('no api key set', 'warn');
+
+</script>
+</body>
+</html>
