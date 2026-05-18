@@ -783,6 +783,273 @@ textarea.field:focus {
     .brand .sub { display: none; }
 }
 
+/* ───── SCREENING ───── */
+.s-back { margin-bottom: 14px; display: block; }
+
+.s-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 14px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+}
+.s-title {
+    font-family: var(--mono);
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.2;
+    flex: 1;
+}
+.s-subtitle {
+    width: 100%;
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--ink-2);
+    line-height: 1.45;
+    margin-top: -4px;
+}
+
+.s-score-badge {
+    background: var(--surf);
+    border: 1px solid var(--border);
+    border-radius: var(--r-mini);
+    padding: 8px 12px;
+    text-align: right;
+    min-width: 88px;
+    transition: background 160ms, border-color 160ms;
+}
+.s-score-badge.warn { background: var(--warn-soft); border-color: var(--warn); }
+.s-score-badge.err  { background: rgba(184,36,61,.08); border-color: var(--err); }
+.s-score-label {
+    font-family: var(--mono); font-size: 9px; text-transform: lowercase;
+    letter-spacing: .08em; color: var(--ink-3); margin-bottom: 2px;
+}
+.s-score-value {
+    font-family: var(--mono); font-size: 22px; font-weight: 600;
+    color: var(--ink); line-height: 1;
+}
+.s-score-denom { font-size: 13px; color: var(--ink-3); font-weight: 400; }
+.s-score-progress {
+    font-family: var(--mono); font-size: 9px; color: var(--ink-3);
+    margin-top: 4px; text-transform: lowercase;
+}
+
+.s-meta {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px; margin-bottom: 12px;
+}
+.s-meta-field { display: flex; flex-direction: column; gap: 3px; }
+.s-meta-field label {
+    font-family: var(--mono); font-size: 9px; letter-spacing: .08em;
+    text-transform: lowercase; color: var(--ink-3);
+}
+.s-meta-field input {
+    background: var(--inset); border: 1px solid var(--border);
+    border-radius: var(--r-input); padding: 6px 9px;
+    font-family: var(--sans); font-size: 13px; color: var(--ink);
+    outline: none; transition: border-color 120ms;
+}
+.s-meta-field input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.s-instructions {
+    border-left: 3px solid var(--accent); padding: 6px 12px;
+    margin-bottom: 14px; font-size: 12.5px; color: var(--ink-2);
+    line-height: 1.55; background: var(--accent-soft);
+    border-radius: 0 var(--r-mini) var(--r-mini) 0;
+}
+
+.s-q-table { display: flex; flex-direction: column; margin-bottom: 14px; }
+
+.s-q-header {
+    display: grid; gap: 6px; align-items: end;
+    padding-bottom: 8px; border-bottom: 1.5px solid var(--ink);
+}
+.s-q-header.s-likert4 { grid-template-columns: 26px 1fr repeat(4, 48px); }
+.s-q-header.s-binary  { grid-template-columns: 26px 1fr 60px 60px; }
+
+.s-q-col-label {
+    font-family: var(--mono); font-size: 9px; letter-spacing: .04em;
+    text-transform: lowercase; text-align: center; color: var(--ink-2); line-height: 1.2;
+}
+
+.s-q-row {
+    display: grid; gap: 6px; align-items: center;
+    padding: 10px 0; border-bottom: 1px solid var(--border-2);
+    transition: background 120ms;
+}
+.s-q-row.s-likert4 { grid-template-columns: 26px 1fr repeat(4, 48px); }
+.s-q-row.s-binary  { grid-template-columns: 26px 1fr 60px 60px; }
+.s-q-row:hover { background: var(--surf); }
+.s-q-row.s-answered { background: rgba(29,122,58,.04); }
+
+.s-q-num {
+    font-family: var(--mono); font-size: 12px; font-weight: 500;
+    color: var(--ink-4); text-align: center;
+}
+.s-q-row.s-answered .s-q-num { color: var(--ok); }
+.s-q-text { font-size: 13px; line-height: 1.4; color: var(--ink); padding-right: 4px; }
+.s-criterion {
+    display: block; font-size: 10.5px; color: var(--ink-3);
+    font-style: italic; margin-top: 2px;
+}
+
+.s-q-cell { display: flex; justify-content: center; }
+.s-q-cell input[type="radio"] {
+    appearance: none; -webkit-appearance: none;
+    width: 15px; height: 15px; border: 1.5px solid var(--ink-3);
+    border-radius: 50%; cursor: pointer; position: relative;
+    transition: all 120ms; background: transparent;
+}
+.s-q-cell input[type="radio"]:hover {
+    border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.s-q-cell input[type="radio"]:checked {
+    border-color: var(--accent); background: var(--accent);
+}
+.s-q-cell input[type="radio"]:checked::after {
+    content: ''; position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%,-50%); width: 5px; height: 5px;
+    background: white; border-radius: 50%;
+}
+
+.s-q-options-mobile {
+    display: none; grid-column: 2; gap: 4px;
+    flex-wrap: wrap; margin-top: 6px;
+}
+.s-q-options-mobile label {
+    font-family: var(--mono); font-size: 9.5px; letter-spacing: .04em;
+    text-transform: lowercase; padding: 7px 5px; border: 1px solid var(--border);
+    border-radius: var(--r-mini); text-align: center; cursor: pointer;
+    background: var(--inset); color: var(--ink-2); transition: all 120ms; flex: 1;
+}
+.s-q-options-mobile label.selected {
+    background: var(--accent); color: white; border-color: var(--accent);
+}
+
+@media (max-width: 720px) {
+    .s-q-header.s-likert4 .s-q-col-label,
+    .s-q-header.s-binary .s-q-col-label { display: none; }
+    .s-q-header.s-likert4, .s-q-header.s-binary { grid-template-columns: 26px 1fr; }
+    .s-q-row.s-likert4, .s-q-row.s-binary { grid-template-columns: 26px 1fr; }
+    .s-q-row .s-q-cell { display: none; }
+    .s-q-options-mobile { display: flex; }
+    .s-meta { grid-template-columns: 1fr; }
+}
+
+.s-result {
+    margin-top: 14px; padding: 14px 16px 16px; display: none;
+    border: 1px solid var(--border); border-left: 3px solid var(--border);
+    background: var(--surf); border-radius: var(--r-card);
+}
+.s-result.show { display: block; }
+.s-result.s-below         { border-left-color: var(--ok);  background: rgba(29,122,58,.04); }
+.s-result.s-indeterminate { border-left-color: var(--warn); background: var(--warn-soft); }
+.s-result.s-elevated      { border-left-color: var(--err);  background: rgba(184,36,61,.05); }
+
+.s-result-eyebrow {
+    font-family: var(--mono); font-size: 9px; letter-spacing: .1em;
+    text-transform: lowercase; color: var(--ink-3); margin-bottom: 5px;
+}
+.s-result.s-below .s-result-eyebrow         { color: var(--ok); }
+.s-result.s-indeterminate .s-result-eyebrow { color: var(--warn); }
+.s-result.s-elevated .s-result-eyebrow      { color: var(--err); }
+.s-result-headline {
+    font-family: var(--sans); font-size: 14.5px; font-weight: 600;
+    letter-spacing: -.01em; margin-bottom: 7px; color: var(--ink); line-height: 1.25;
+}
+.s-result-body { font-size: 13px; color: var(--ink-2); line-height: 1.55; }
+.s-result-body p + p { margin-top: 7px; }
+
+.s-endorsed { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); }
+.s-endorsed-label {
+    font-family: var(--mono); font-size: 9px; letter-spacing: .08em;
+    text-transform: lowercase; color: var(--ink-3); margin-bottom: 7px;
+}
+.s-endorsed ul { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 4px; }
+.s-endorsed li {
+    font-family: var(--mono); font-size: 10.5px; background: var(--inset);
+    border: 1px solid var(--border); border-radius: var(--r-pill);
+    padding: 3px 9px; color: var(--ink-2);
+}
+
+.s-actions { margin-top: 14px; display: flex; gap: 8px; flex-wrap: wrap; }
+
+.s-footer {
+    margin-top: 20px; padding-top: 12px; border-top: 1px solid var(--border);
+    font-family: var(--mono); font-size: 10.5px; color: var(--ink-3); line-height: 1.55;
+}
+.s-footer p + p { margin-top: 4px; }
+.s-footer strong { color: var(--ink-2); font-weight: 500; }
+
+/* ─── SPLIT WORKSPACE ─── */
+.workspace { display: block; }
+
+body.screening-open .workspace {
+    display: flex;
+    align-items: flex-start;
+}
+body.screening-open .head-inner,
+body.screening-open .toolbar,
+body.screening-open .ai-panel { max-width: none; }
+body.screening-open main {
+    max-width: none;
+    margin: 0;
+    flex: 1;
+    min-width: 0;
+}
+
+.screening-panel {
+    display: none;
+    width: 460px;
+    flex-shrink: 0;
+    border-left: 1px solid var(--border);
+    background: var(--bg);
+    padding: 20px 22px 80px;
+    position: sticky;
+    overflow-y: auto;
+    box-shadow: -4px 0 16px rgba(15,18,30,.04);
+}
+body.screening-open .screening-panel { display: block; }
+
+.sp-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+}
+.sp-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: lowercase;
+    color: var(--ink-2);
+    letter-spacing: .06em;
+    font-weight: 500;
+}
+.sp-title .accent { color: var(--accent); }
+
+.s-insert-area { margin-top: 14px; display: none; }
+
+@media (max-width: 1060px) {
+    body.screening-open .workspace { display: block; }
+    .screening-panel {
+        position: static !important;
+        width: 100%;
+        border-left: none;
+        border-top: 2px solid var(--border);
+        max-height: none !important;
+        box-shadow: none;
+    }
+}
+
 </style>
 </head>
 <body>
@@ -796,6 +1063,7 @@ textarea.field:focus {
         <div class="head-actions">
             <button class="icon-btn" id="btn-frasario">frasario</button>
             <button class="icon-btn" id="btn-questionnaire">questionnaires</button>
+            <button class="icon-btn" id="btn-screening">screening</button>
             <button class="icon-btn" id="btn-settings">settings</button>
         </div>
     </div>
@@ -806,7 +1074,7 @@ textarea.field:focus {
         <span class="glyph">✦</span> check internal validity
     </button>
     <button class="tb-btn" id="btn-copy-md">
-        <span class="glyph">↓</span> copy as markdown
+        <span class="glyph">↓</span> copy note
     </button>
     <button class="tb-btn" id="btn-clear">
         <span class="glyph">↺</span> reset
@@ -830,6 +1098,7 @@ textarea.field:focus {
     </div>
 </div>
 
+<div id="workspace" class="workspace">
 <main>
     <div class="intro">
         <h1>outpatient assessment <em>workspace</em></h1>
@@ -837,6 +1106,8 @@ textarea.field:focus {
     </div>
     <div id="form"></div>
 </main>
+<aside id="screening-panel" class="screening-panel"></aside>
+</div>
 
 <div class="scrim" id="scrim"></div>
 <div class="drawer" id="drawer">
@@ -1218,19 +1489,16 @@ function assembleMarkdown() {
     for (const s of TEMPLATE.sections) {
         if (s.group) {
             lines.push('');
-            lines.push(`## ${s.label}`);
             for (const c of s.children) {
                 const v = (State.draft[c.id] || '').trim();
                 if (!v) continue;
-                lines.push('');
-                lines.push(`**${c.label}** — ${v.replace(/\n+/g, ' ')}`);
+                lines.push(`${c.label}: ${v.replace(/\n+/g, ' ')}`);
             }
         } else {
             const v = (State.draft[s.id] || '').trim();
             if (!v) continue;
             lines.push('');
-            lines.push(`## ${s.label}`);
-            lines.push('');
+            lines.push(s.label);
             lines.push(v);
         }
     }
@@ -1460,6 +1728,365 @@ window.addEventListener('message', (ev) => {
 });
 
 $('#btn-questionnaire').addEventListener('click', openQuestionnaires);
+
+/* ─── SCREENING ─── */
+
+function sListJoin(arr, sep) {
+    if (arr.length === 0) return '';
+    if (arr.length === 1) return arr[0];
+    const list = [...arr];
+    const last = list.pop();
+    return `${list.join(sep)}${sep === ', ' ? ', and ' : '; and '}${last}`;
+}
+
+function closeScreeningPanel() {
+    document.body.classList.remove('screening-open');
+    const panel = $('#screening-panel');
+    if (panel) panel.innerHTML = '';
+    sActiveTool = null;
+    sState = null;
+}
+
+function sPanelWrap(titleHtml, content) {
+    const panel = $('#screening-panel');
+    panel.innerHTML = '';
+    document.body.classList.add('screening-open');
+    const headH = ($('.head') || {offsetHeight: 44}).offsetHeight;
+    const toolbarH = ($('.toolbar') || {offsetHeight: 52}).offsetHeight;
+    const top = headH + toolbarH;
+    panel.style.top = top + 'px';
+    panel.style.maxHeight = `calc(100vh - ${top}px)`;
+    const hdr = el('div', { class: 'sp-head' });
+    const titleEl = el('div', { class: 'sp-title' });
+    titleEl.innerHTML = titleHtml;
+    hdr.appendChild(titleEl);
+    hdr.appendChild(el('button', { class: 'icon-btn', onclick: closeScreeningPanel }, 'close ✕'));
+    panel.appendChild(hdr);
+    panel.appendChild(content);
+}
+
+const SCREENING_TOOLS = {
+    aq10: {
+        slug: 'aq10',
+        title: { plain: 'AQ-', em: '10' },
+        subtitle: 'Autism Spectrum Quotient — adult screening (no learning disability)',
+        instructions: `<strong>Instructions.</strong> Tick one option per question. Score 1 point for <em>Definitely</em> or <em>Slightly Agree</em> on items 1, 7, 8, 10. Score 1 point for <em>Definitely</em> or <em>Slightly Disagree</em> on items 2, 3, 4, 5, 6, 9. A score of <strong>≥6</strong> warrants consideration of specialist diagnostic referral.`,
+        format: 'likert4',
+        options: [
+            { value: 'def_agree',    label: 'Definitely Agree',    short: 'Def. Agree',    isAgree: true  },
+            { value: 'sli_agree',    label: 'Slightly Agree',      short: 'Sli. Agree',    isAgree: true  },
+            { value: 'sli_disagree', label: 'Slightly Disagree',   short: 'Sli. Disagree', isAgree: false },
+            { value: 'def_disagree', label: 'Definitely Disagree', short: 'Def. Disagree', isAgree: false }
+        ],
+        columnLabels: ['Def.<br>Agree', 'Sli.<br>Agree', 'Sli.<br>Disagree', 'Def.<br>Disagree'],
+        questions: [
+            { id: 1,  text: "I often notice small sounds when others do not", agreeScores: true,  short: "heightened sensory awareness" },
+            { id: 2,  text: "I usually concentrate more on the whole picture, rather than the small details", agreeScores: false, short: "attention to detail" },
+            { id: 3,  text: "I find it easy to do more than one thing at once", agreeScores: false, short: "difficulty multitasking" },
+            { id: 4,  text: "If there is an interruption, I can switch back to what I was doing very quickly", agreeScores: false, short: "difficulty with task-switching after interruption" },
+            { id: 5,  text: "I find it easy to 'read between the lines' when someone is talking to me", agreeScores: false, short: "difficulty interpreting implicit communication" },
+            { id: 6,  text: "I know how to tell if someone listening to me is getting bored", agreeScores: false, short: "difficulty reading social cues" },
+            { id: 7,  text: "When I'm reading a story I find it difficult to work out the characters' intentions", agreeScores: true, short: "difficulty inferring intentions in narrative" },
+            { id: 8,  text: "I like to collect information about categories of things (e.g. types of car, types of bird, types of train, types of plant etc)", agreeScores: true, short: "categorical / systemising interests" },
+            { id: 9,  text: "I find it easy to work out what someone is thinking or feeling just by looking at their face", agreeScores: false, short: "difficulty reading facial affect" },
+            { id: 10, text: "I find it difficult to work out people's intentions", agreeScores: true, short: "difficulty inferring intentions" }
+        ],
+        scoreItem: (q, opt) => q.agreeScores ? opt.isAgree : !opt.isAgree,
+        band: (score) => score >= 6 ? 'elevated' : 'below',
+        bandHeadline: (score, band) => band === 'elevated'
+            ? `Score ${score}/10 · consider specialist referral`
+            : `Score ${score}/10 · below cut-off`,
+        bandBody: (score, band) => band === 'elevated'
+            ? `<p>The score meets or exceeds the AQ-10 cut-off of 6. Per NICE CG142, consider referral for a specialist autism diagnostic assessment, taking into account the broader clinical picture, developmental history, and patient preference.</p><p>The AQ-10 is a screening instrument with limited specificity; co-occurring presentations (anxiety, social phobia, OCD, ADHD, complex trauma) can elevate scores and warrant differential consideration.</p>`
+            : `<p>The score is below the AQ-10 cut-off of 6. Specialist autism referral is not indicated by this screen alone.</p><p>If clinical suspicion remains strong despite a sub-threshold score (e.g. due to camouflaging, atypical presentation, or developmental history), consider further evaluation with a more comprehensive instrument (AQ-50, RAADS-R) and specialist input.</p>`,
+        opaProse: (score, band, endorsed) => {
+            const s = sListJoin(endorsed.map(e => e.short), '; ');
+            if (band === 'elevated') return `The patient completed the AQ-10 today, scoring ${score}/10 — above the screening cut-off of ≥6 (NICE CG142) and suggestive of a possible autism spectrum presentation warranting consideration of specialist diagnostic referral. The following traits were endorsed: ${s}.`;
+            if (endorsed.length === 0) return `The patient completed the AQ-10 today, scoring ${score}/10 — below the screening cut-off of ≥6 (NICE CG142). Specialist autism referral is not indicated on this screen alone.`;
+            return `The patient completed the AQ-10 today, scoring ${score}/10 — below the screening cut-off of ≥6 (NICE CG142). Specialist autism referral is not indicated on this screen alone. The following traits were endorsed: ${s}.`;
+        },
+        footer: `<p><strong>Reference:</strong> Allison C, Auyeung B, Baron-Cohen S (2012). <em>Journal of the American Academy of Child &amp; Adolescent Psychiatry</em> 51(2):202–12.</p><p>Recommended in NICE CG142 — Autism: recognition, referral, diagnosis and management of adults on the autism spectrum.</p>`
+    },
+    msi: {
+        slug: 'msi-bpd',
+        title: { plain: 'MSI-', em: 'BPD' },
+        subtitle: 'McLean Screening Instrument for Borderline Personality Disorder',
+        instructions: `<strong>Instructions.</strong> A 10-item self-report screen for borderline personality disorder (Zanarini et al., 2003). Each <em>Yes</em> scores 1 point; total range 0–10. Cut-offs: <strong>≤4</strong> not consistent with BPD; <strong>5–6</strong> indeterminate (BPD cannot be excluded); <strong>≥7</strong> above traditional clinical cut-off.`,
+        format: 'binary',
+        options: [
+            { value: 'yes', label: 'Yes', score: 1 },
+            { value: 'no',  label: 'No',  score: 0 }
+        ],
+        columnLabels: ['Yes', 'No'],
+        questions: [
+            { id: 1,  text: "Have any of your closest relationships been troubled by a lot of arguments or repeated breakups?", criterion: "unstable interpersonal relationships", short: "unstable relationships" },
+            { id: 2,  text: "Have you deliberately hurt yourself physically (e.g. punched yourself, cut yourself, burned yourself)? How about made a suicide attempt?", criterion: "recurrent self-harm or suicidal behaviour", short: "self-harm / suicidality" },
+            { id: 3,  text: "Have you had at least two other problems with impulsivity (e.g. eating binges and spending sprees, drinking too much and verbal outbursts)?", criterion: "impulsivity in ≥2 self-damaging areas", short: "impulsivity" },
+            { id: 4,  text: "Have you been extremely moody?", criterion: "affective instability", short: "affective instability" },
+            { id: 5,  text: "Have you felt very angry a lot of the time? How about often acted in an angry or sarcastic manner?", criterion: "inappropriate or intense anger", short: "anger" },
+            { id: 6,  text: "Have you often been distrustful of other people?", criterion: "stress-related paranoid ideation", short: "paranoid ideation" },
+            { id: 7,  text: "Have you frequently felt unreal or as if things around you were unreal?", criterion: "dissociative symptoms", short: "dissociation" },
+            { id: 8,  text: "Have you chronically felt empty?", criterion: "chronic feelings of emptiness", short: "chronic emptiness" },
+            { id: 9,  text: "Have you often felt that you had no idea of who you are or that you have no identity?", criterion: "identity disturbance", short: "identity disturbance" },
+            { id: 10, text: "Have you made desperate efforts to avoid feeling abandoned or being abandoned (e.g. repeatedly called someone to reassure yourself that he or she still cared, begged them not to leave you, clung to them physically)?", criterion: "frantic efforts to avoid abandonment", short: "fear of abandonment" }
+        ],
+        scoreItem: (q, opt) => opt.score === 1,
+        band: (score) => score >= 7 ? 'elevated' : score >= 5 ? 'indeterminate' : 'below',
+        bandHeadline: (score, band) => band === 'elevated'
+            ? `Score ${score}/10 · consistent with BPD presentation`
+            : band === 'indeterminate' ? `Score ${score}/10 · BPD cannot be ruled out`
+            : `Score ${score}/10 · not consistent with BPD`,
+        bandBody: (score, band) => {
+            if (band === 'elevated') return `<p>The score exceeds the traditional clinical cut-off of ≥7 (Zanarini et al., 2003) and is consistent with a presentation in keeping with borderline personality disorder.</p><p>The MSI-BPD is a screening instrument; structured diagnostic assessment (SCID-5-PD, IPDE) alongside detailed history-taking is required for diagnosis. Differentials worth considering include complex post-traumatic stress, bipolar II disorder, and ADHD with emotional dysregulation.</p>`;
+            if (band === 'indeterminate') return `<p>The score falls within the indeterminate range (5–6). Approximately 19% of individuals with BPD score below the traditional cut-off of 7, so a sub-threshold score does not exclude the diagnosis.</p><p>Further structured assessment (SCID-5-PD, IPDE) and longitudinal observation are recommended, particularly where the broader clinical picture is suggestive.</p>`;
+            return `<p>The score is below the screening cut-off and not consistent with a borderline personality disorder presentation on the basis of this screen alone.</p><p>Where clinical suspicion remains based on the broader presentation, structured personality assessment (SCID-5-PD, IPDE) may still be considered.</p>`;
+        },
+        endorsedRender: (endorsed) => endorsed.map(e => e.criterion),
+        opaProse: (score, band, endorsed) => {
+            const s = sListJoin(endorsed.map(e => e.criterion), ', ');
+            if (band === 'elevated') return `The patient completed the MSI-BPD today, scoring ${score}/10 — above the traditional clinical cut-off of ≥7 and consistent with a borderline personality disorder presentation. The following symptoms were reported: ${s}.`;
+            if (band === 'indeterminate') return `The patient completed the MSI-BPD today, scoring ${score}/10 — within the indeterminate range (5–6), at which BPD cannot be confidently excluded. The following symptoms were reported: ${s}.`;
+            if (endorsed.length === 0) return `The patient completed the MSI-BPD today, scoring ${score}/10 — below the screening cut-off of ≥7 and not consistent with a borderline personality disorder presentation.`;
+            return `The patient completed the MSI-BPD today, scoring ${score}/10 — below the screening cut-off of ≥7 and not consistent with a borderline personality disorder presentation. The following symptoms were reported: ${s}.`;
+        },
+        footer: `<p><strong>Reference:</strong> Zanarini MC et al. (2003). <em>Journal of Personality Disorders</em>, 17(6), 568–573.</p><p>Indeterminate-range note based on Zimmerman M &amp; Balling C (2021). <em>Journal of Personality Disorders</em>, 35(2), 288–298.</p>`
+    }
+};
+
+let sActiveTool = null;
+let sState = null;
+
+function openScreeningLauncher() {
+    const wrap = el('div');
+    wrap.appendChild(el('div', { class: 'field-row help', style: 'margin-bottom:14px' },
+        'Validated brief screens. Complete the instrument — the scored paragraph inserts directly into the note.'));
+    for (const toolId in SCREENING_TOOLS) {
+        const tool = SCREENING_TOOLS[toolId];
+        wrap.appendChild(el('div', {
+            class: 'q-list-item',
+            onclick: () => openScreeningTool(tool)
+        },
+            el('div', { class: 'q-name' }, `${tool.title.plain}${tool.title.em}`),
+            el('div', { class: 'q-meta' }, `${tool.questions.length} items · ${tool.subtitle.split('—')[0].trim()}`)
+        ));
+    }
+    sPanelWrap('<span class="accent">·</span> screening', wrap);
+}
+
+function openScreeningTool(tool) {
+    sActiveTool = tool;
+    sState = { toolSlug: tool.slug, answers: {}, initials: '', date: new Date().toISOString().split('T')[0], clinician: '' };
+
+    const wrap = el('div');
+
+    wrap.appendChild(el('button', { class: 'mini-btn s-back', onclick: openScreeningLauncher }, '← all instruments'));
+
+    const hdr = el('div', { class: 's-header' });
+    hdr.appendChild(el('div', { class: 's-title' }, `${tool.title.plain}${tool.title.em}`));
+    const badge = el('div', { class: 's-score-badge', id: 's-score-badge' });
+    badge.appendChild(el('div', { class: 's-score-label' }, 'score'));
+    badge.appendChild(el('div', { class: 's-score-value' },
+        el('span', { id: 's-score-num' }, '0'),
+        el('span', { class: 's-score-denom' }, `/${tool.questions.length}`)
+    ));
+    badge.appendChild(el('div', { class: 's-score-progress', id: 's-score-progress' }, `0 of ${tool.questions.length} answered`));
+    hdr.appendChild(badge);
+    hdr.appendChild(el('div', { class: 's-subtitle' }, tool.subtitle));
+    wrap.appendChild(hdr);
+
+    const meta = el('div', { class: 's-meta' });
+    [
+        { id: 's-initials', label: 'patient initials', type: 'text', key: 'initials'  },
+        { id: 's-date',     label: 'date',             type: 'date', key: 'date'      },
+        { id: 's-clinician',label: 'clinician',        type: 'text', key: 'clinician' }
+    ].forEach(f => {
+        const fld = el('div', { class: 's-meta-field' });
+        fld.appendChild(el('label', { for: f.id }, f.label));
+        const inp = el('input', { type: f.type, id: f.id, autocomplete: 'off' });
+        if (f.key === 'date') inp.value = sState.date;
+        inp.addEventListener('input', () => { if (sState) sState[f.key] = inp.value; sScreeningSave(); });
+        fld.appendChild(inp);
+        meta.appendChild(fld);
+    });
+    wrap.appendChild(meta);
+
+    const instr = el('div', { class: 's-instructions' });
+    instr.innerHTML = tool.instructions;
+    wrap.appendChild(instr);
+
+    const qTable = el('div', { class: 's-q-table', id: 's-q-table' });
+    const hRow = el('div', { class: `s-q-header s-${tool.format}` });
+    hRow.innerHTML = `<div></div><div></div>${tool.columnLabels.map(l => `<div class="s-q-col-label">${l}</div>`).join('')}`;
+    qTable.appendChild(hRow);
+    tool.questions.forEach(q => {
+        const row = el('div', { class: `s-q-row s-${tool.format}`, 'data-sqid': String(q.id) });
+        row.innerHTML = `
+            <div class="s-q-num">${String(q.id).padStart(2, '0')}</div>
+            <div class="s-q-text">${q.text}${q.criterion ? `<span class="s-criterion">${q.criterion}</span>` : ''}</div>
+            ${tool.options.map(opt => `<div class="s-q-cell"><input type="radio" name="sq${q.id}" value="${opt.value}" id="sq${q.id}_${opt.value}" aria-label="${opt.label}"></div>`).join('')}
+            <div class="s-q-options-mobile">${tool.options.map(opt => `<label data-svalue="${opt.value}" data-sqid="${q.id}">${opt.short || opt.label}</label>`).join('')}</div>
+        `;
+        qTable.appendChild(row);
+    });
+    wrap.appendChild(qTable);
+
+    wrap.appendChild(el('div', { class: 's-result', id: 's-result' }));
+    wrap.appendChild(el('div', { class: 's-insert-area', id: 's-insert-area' }));
+    wrap.appendChild(el('div', { class: 's-actions' },
+        el('button', {
+            class: 'tb-btn',
+            onclick: () => { if (Object.keys(sState.answers).length === 0 || confirm('Reset all answers?')) sScreeningReset(); }
+        }, '↺ reset')
+    ));
+
+    const footer = el('div', { class: 's-footer' });
+    footer.innerHTML = tool.footer;
+    wrap.appendChild(footer);
+
+    sPanelWrap(`<span class="accent">·</span> ${tool.title.plain}<em style="font-style:normal;color:var(--accent)">${tool.title.em}</em>`, wrap);
+
+    const qt = $('#s-q-table');
+    qt.addEventListener('change', e => {
+        if (!e.target.matches('input[type="radio"]')) return;
+        const qid = parseInt(e.target.name.replace('sq', ''));
+        sState.answers[qid] = e.target.value;
+        sUpdateMobileSelection(qid, e.target.value);
+        sScreeningSave();
+        sScreeningRecompute();
+    });
+    qt.addEventListener('click', e => {
+        const lbl = e.target.closest('.s-q-options-mobile label');
+        if (!lbl) return;
+        const qid = parseInt(lbl.dataset.sqid);
+        const val = lbl.dataset.svalue;
+        sState.answers[qid] = val;
+        const radio = document.getElementById(`sq${qid}_${val}`);
+        if (radio) radio.checked = true;
+        sUpdateMobileSelection(qid, val);
+        sScreeningSave();
+        sScreeningRecompute();
+    });
+
+    sScreeningLoadState();
+    sScreeningRecompute();
+}
+
+function sUpdateMobileSelection(qid, val) {
+    const row = $(`.s-q-row[data-sqid="${qid}"]`);
+    if (!row) return;
+    row.querySelectorAll('.s-q-options-mobile label').forEach(l =>
+        l.classList.toggle('selected', l.dataset.svalue === val)
+    );
+}
+
+function sScreeningCompute() {
+    let score = 0;
+    const endorsed = [];
+    sActiveTool.questions.forEach(q => {
+        const ans = sState.answers[q.id];
+        if (!ans) return;
+        const opt = sActiveTool.options.find(o => o.value === ans);
+        if (sActiveTool.scoreItem(q, opt)) { score++; endorsed.push(q); }
+    });
+    return { score, band: sActiveTool.band(score), endorsed };
+}
+
+function sScreeningRecompute() {
+    if (!sActiveTool) return;
+    const { score, band, endorsed } = sScreeningCompute();
+    const answered = Object.keys(sState.answers).length;
+    const total = sActiveTool.questions.length;
+
+    const numEl = $('#s-score-num'), progEl = $('#s-score-progress'), badge = $('#s-score-badge');
+    if (numEl) numEl.textContent = score;
+    if (progEl) progEl.textContent = `${answered} of ${total} answered`;
+    if (badge) {
+        badge.classList.remove('warn', 'err');
+        if (answered === total) {
+            if (band === 'elevated') badge.classList.add('err');
+            else if (band === 'indeterminate') badge.classList.add('warn');
+        }
+    }
+
+    sActiveTool.questions.forEach(q => {
+        const row = $(`.s-q-row[data-sqid="${q.id}"]`);
+        if (row) row.classList.toggle('s-answered', !!sState.answers[q.id]);
+    });
+
+    const panel = $('#s-result'), insertArea = $('#s-insert-area');
+    if (answered === total) {
+        if (panel) {
+            panel.className = `s-result show s-${band}`;
+            const eyebrow = band === 'elevated'
+                ? (sActiveTool.slug === 'msi-bpd' ? 'above traditional cut-off' : 'above screening threshold')
+                : band === 'indeterminate' ? 'indeterminate range' : 'below screening threshold';
+            const endorsedHtml = sActiveTool.endorsedRender && endorsed.length > 0
+                ? `<div class="s-endorsed"><div class="s-endorsed-label">items endorsed</div><ul>${sActiveTool.endorsedRender(endorsed).map(e => `<li>${escapeHtml(e)}</li>`).join('')}</ul></div>`
+                : '';
+            panel.innerHTML = `
+                <div class="s-result-eyebrow">${eyebrow}</div>
+                <div class="s-result-headline">${escapeHtml(sActiveTool.bandHeadline(score, band))}</div>
+                <div class="s-result-body">${sActiveTool.bandBody(score, band)}</div>
+                ${endorsedHtml}
+            `;
+        }
+        if (insertArea) {
+            insertArea.style.display = 'block';
+            insertArea.innerHTML = '';
+            insertArea.appendChild(el('button', {
+                class: 'tb-btn primary',
+                onclick: () => sDoInsert('clinical_summary')
+            }, el('span', { class: 'glyph' }, '↓'), ' insert into clinical summary'));
+        }
+    } else {
+        if (panel) panel.className = 's-result';
+        if (insertArea) insertArea.style.display = 'none';
+    }
+}
+
+function sDoInsert(sectionId) {
+    const { score, band, endorsed } = sScreeningCompute();
+    doInsert(sectionId, sActiveTool.opaProse(score, band, endorsed));
+    toast('inserted into clinical summary');
+}
+
+function sScreeningSave() {
+    if (!sActiveTool) return;
+    try { localStorage.setItem(`screening-state-${sActiveTool.slug}-v1`, JSON.stringify(sState)); } catch(e) {}
+}
+
+function sScreeningLoadState() {
+    if (!sActiveTool) return;
+    try {
+        const raw = localStorage.getItem(`screening-state-${sActiveTool.slug}-v1`);
+        if (!raw) return;
+        const loaded = JSON.parse(raw);
+        sState = { ...sState, ...loaded };
+        Object.entries(sState.answers).forEach(([qid, val]) => {
+            const radio = document.getElementById(`sq${qid}_${val}`);
+            if (radio) radio.checked = true;
+            sUpdateMobileSelection(parseInt(qid), val);
+        });
+        const iEl = $('#s-initials'), dEl = $('#s-date'), cEl = $('#s-clinician');
+        if (iEl) iEl.value = sState.initials || '';
+        if (dEl) dEl.value = sState.date || new Date().toISOString().split('T')[0];
+        if (cEl) cEl.value = sState.clinician || '';
+    } catch(e) {}
+}
+
+function sScreeningReset() {
+    sState = { toolSlug: sActiveTool.slug, answers: {}, initials: '', date: new Date().toISOString().split('T')[0], clinician: '' };
+    try { localStorage.removeItem(`screening-state-${sActiveTool.slug}-v1`); } catch(e) {}
+    document.querySelectorAll('#s-q-table input[type="radio"]').forEach(r => r.checked = false);
+    document.querySelectorAll('#s-q-table .s-q-options-mobile label').forEach(l => l.classList.remove('selected'));
+    const iEl = $('#s-initials'), dEl = $('#s-date'), cEl = $('#s-clinician');
+    if (iEl) iEl.value = '';
+    if (dEl) dEl.value = sState.date;
+    if (cEl) cEl.value = '';
+    sScreeningRecompute();
+}
+
+$('#btn-screening').addEventListener('click', openScreeningLauncher);
 
 /* ─── AI ─── */
 async function runAIFunction(fnId) {
