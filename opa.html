@@ -124,6 +124,138 @@ body { min-height: 100vh; min-height: 100dvh; }
 }
 .icon-btn:hover { background: var(--surf); color: var(--ink); border-color: var(--border); }
 
+/* ───── GPT LAUNCHER ───── */
+.gpt-launch,
+.drug-launch {
+    background: linear-gradient(180deg, var(--surf), var(--inset));
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    padding: 20px 22px 22px;
+    margin-bottom: 22px;
+    box-shadow: var(--shadow-md);
+}
+.gpt-launch-head,
+.drug-launch-head {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+.gpt-launch-title,
+.drug-launch-title {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: lowercase;
+    letter-spacing: 0.06em;
+    color: var(--ink);
+}
+.gpt-launch-title .dot,
+.drug-launch-title .dot { color: var(--accent); margin: 0 1px; }
+.gpt-launch-sub,
+.drug-launch-sub {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    text-transform: lowercase;
+    color: var(--ink-3);
+}
+.gpt-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+}
+.gpt-tile {
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 13px;
+    background: var(--inset);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+    transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease;
+}
+.gpt-tile:hover {
+    transform: translateY(-3px);
+    border-color: var(--accent-glow);
+    box-shadow: 0 8px 22px rgba(29, 78, 216, 0.12), 0 2px 6px rgba(15, 18, 30, 0.05);
+}
+.gpt-tile:active { transform: translateY(-1px); }
+.gpt-badge {
+    width: 54px;
+    height: 54px;
+    border-radius: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 19px;
+    font-weight: 600;
+    text-transform: lowercase;
+    letter-spacing: -0.02em;
+    color: var(--accent);
+    background: linear-gradient(150deg, var(--accent-soft), var(--accent-glow));
+    border: 1px solid var(--accent-glow);
+    transition: background 140ms ease, color 140ms ease, transform 140ms ease;
+}
+.gpt-tile:hover .gpt-badge {
+    background: linear-gradient(150deg, var(--accent), var(--accent-2));
+    color: #fff;
+    transform: scale(1.05);
+}
+.gpt-tile-meta { display: flex; flex-direction: column; gap: 3px; }
+.gpt-tile-name {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    font-weight: 500;
+    text-transform: lowercase;
+    color: var(--ink);
+    line-height: 1.3;
+}
+.drug-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.drug-row input {
+    flex: 1 1 240px;
+    min-width: 180px;
+    appearance: none;
+    border: 1px solid var(--border);
+    background: var(--inset);
+    color: var(--ink);
+    border-radius: var(--r-input);
+    padding: 11px 14px;
+    font-family: var(--sans);
+    font-size: 14px;
+    outline: none;
+}
+.drug-row input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px var(--accent-soft);
+}
+.drug-row .mini-btn {
+    border-color: var(--border);
+    background: var(--surf);
+    color: var(--ink-2);
+    padding: 9px 12px;
+}
+.drug-row .mini-btn:hover {
+    color: var(--accent);
+    border-color: var(--accent-glow);
+    background: var(--inset);
+}
+@media (max-width: 640px) {
+    .gpt-launch,
+    .drug-launch { border-radius: 18px; padding: 16px; margin-bottom: 18px; }
+    .gpt-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .gpt-badge { width: 48px; height: 48px; font-size: 17px; border-radius: 14px; }
+    .gpt-tile { padding: 14px; gap: 11px; }
+}
+
 /* ───── TOOLBAR ───── */
 .toolbar {
     max-width: 920px;
@@ -1104,6 +1236,59 @@ body.screening-open .screening-panel { display: block; }
         <h1>outpatient assessment <em>workspace</em></h1>
         <p>auto-saved locally · anything sent to openai is redacted &amp; previewed</p>
     </div>
+
+    <section class="gpt-launch" aria-label="my custom gpts">
+        <div class="gpt-launch-head">
+            <span class="gpt-launch-title">my gpts<span class="dot">·</span></span>
+            <span class="gpt-launch-sub">custom assistants · open in a new tab</span>
+        </div>
+        <div class="gpt-grid">
+            <a class="gpt-tile" href="https://chatgpt.com/g/g-6a16aa9278048191b2d9366402a21549-frame-breaker" target="_blank" rel="noopener noreferrer">
+                <span class="gpt-badge">fb</span>
+                <span class="gpt-tile-meta">
+                    <span class="gpt-tile-name">frame breaker</span>
+                </span>
+            </a>
+            <a class="gpt-tile" href="https://chatgpt.com/g/g-6928cd79d2088191aa6fd088501224a2-paper-breakdown" target="_blank" rel="noopener noreferrer">
+                <span class="gpt-badge">pb</span>
+                <span class="gpt-tile-meta">
+                    <span class="gpt-tile-name">paper breakdown</span>
+                </span>
+            </a>
+            <a class="gpt-tile" href="https://chatgpt.com/g/g-69b9360c30448191b48678dc5b7bd8b1" target="_blank" rel="noopener noreferrer">
+                <span class="gpt-badge">3</span>
+                <span class="gpt-tile-meta">
+                    <span class="gpt-tile-name">gpt 3</span>
+                </span>
+            </a>
+            <a class="gpt-tile" href="https://chatgpt.com/g/g-68dd4cfd9fd88191b87247e9e48e3280" target="_blank" rel="noopener noreferrer">
+                <span class="gpt-badge">4</span>
+                <span class="gpt-tile-meta">
+                    <span class="gpt-tile-name">gpt 4</span>
+                </span>
+            </a>
+            <a class="gpt-tile" href="https://chatgpt.com/g/g-68b08a974e608191b4f59509430244aa" target="_blank" rel="noopener noreferrer">
+                <span class="gpt-badge">5</span>
+                <span class="gpt-tile-meta">
+                    <span class="gpt-tile-name">gpt 5</span>
+                </span>
+            </a>
+        </div>
+    </section>
+
+    <section class="drug-launch" aria-label="drug search">
+        <div class="drug-launch-head">
+            <span class="drug-launch-title">drug search<span class="dot">·</span></span>
+            <span class="drug-launch-sub">bnf · fda label · drugs.com</span>
+        </div>
+        <div class="drug-row">
+            <input id="drug-query" type="text" placeholder="e.g. sertraline" autocomplete="off" spellcheck="false">
+            <button class="mini-btn" id="drug-bnf" type="button">bnf</button>
+            <button class="mini-btn" id="drug-fda" type="button">fda label</button>
+            <button class="mini-btn" id="drug-drugs" type="button">drugs.com</button>
+        </div>
+    </section>
+
     <div id="form"></div>
 </main>
 <aside id="screening-panel" class="screening-panel"></aside>
@@ -1145,12 +1330,18 @@ const TEMPLATE = {
           default: 'Current diagnosis:\n\nH/O of \n\nFamily history of - ' },
         { id: 'medications', label: 'Medications',
           default: 'Current medications:\nAdherence:\nSide effects:\nAllergies: ' },
+        { id: 'other_medical_conditions', label: 'Other Medical Conditions',
+          default: 'Other medical conditions: ' },
         { id: 'clinical_summary', label: 'Clinical Summary',
           default: 'Presenting Concerns / Chief complaints\n\n' },
         { id: 'breastfeeding', label: 'Breastfeeding or Pregnant?',
           default: '', placeholder: 'N/A · or specify' },
         { id: 'housing', label: 'Housing & Financials', default: '' },
         { id: 'stressors', label: 'Stressors', default: '' },
+        { id: 'physical_activity', label: 'Physical Activity',
+          default: 'Physical activity: ' },
+        { id: 'safeguarding', label: 'Safeguarding',
+          default: 'Safeguarding: ' },
         { id: 'mse', label: 'Mental State Examination', group: true,
           children: [
             { id: 'mse_appearance',         label: 'Appearance & Behaviour',
@@ -1171,6 +1362,8 @@ const TEMPLATE = {
               default: 'No abnormal thought content.' },
             { id: 'mse_perception',         label: 'Perception',
               default: 'Denies perceptual disturbances including visual and auditory hallucinations. No distractibility.' },
+            { id: 'mse_dissociative',       label: 'Dissociative Symptoms',
+              default: 'Denies dissociative symptoms.' },
             { id: 'mse_suicidality',        label: 'Suicidality & Aggression',
               default: 'Denies suicidal thoughts, intentions or plans. No NSSH. Denies thoughts of harming others.' },
             { id: 'mse_family_suicidality', label: 'Family History of Suicidality',
@@ -1189,18 +1382,14 @@ const TEMPLATE = {
           default:
 `Risk formulated rather than stratified (per NICE NG225).
 
-Dynamic factors (current, modifiable — e.g. hopelessness, intent/plan, access to means, recent self-harm, substance use, sleep loss, recent losses, isolation, recent discharge): 
-
-Protective factors (e.g. reasons for living, dependants, future orientation, engagement, therapeutic alliance, social support, ambivalence): 
-
-Formulation: 
-
-Safety plan: warning signs, coping strategies, means restriction discussed.
-Crisis contacts shared: AH / GP / SPA / NHS 111 / 999 / Samaritans 116 123.` },
+Dynamic factors:
+Protective factors:
+Formulation:
+Safety plan and crisis contacts shared.` },
         { id: 'capacity', label: 'Capacity',
           default: 'Yes — patient has capacity to consent to and accept treatment.' },
         { id: 'plan', label: 'Plan',
-          default: 'GP kindly ensure physical health checks as per NICE guidelines on antipsychotics, including monitoring of weight/BMI, BP, FBC, U+Es, LFTs, TFTs, HbA1c, fasting lipids, fasting glucose, prolactin, and perform annual ECG, looking specifically for QTc interval prolongation. Fasting blood glucose every 6 months.\n\nPatient aware can contact AH/GP/SPA/NHS 111 numbers if in crisis; contacts shared.\n\nOPA in 3 months.' }
+          default: 'GP kindly ensure physical health checks as per NICE guidelines on antipsychotics, including monitoring of weight/BMI, BP, FBC, U+Es, LFTs, TFTs, HbA1c, fasting lipids, fasting glucose, prolactin, and perform annual ECG, looking specifically for QTc interval prolongation. Fasting blood glucose every 6 months.\n\nadvised to consider moderate physical activity\n\nPatient aware can contact AH/GP/SPA/NHS 111 numbers if in crisis; contacts shared.\n\nOPA in 3 months.' }
     ]
 };
 
@@ -1492,7 +1681,8 @@ function assembleMarkdown() {
             for (const c of s.children) {
                 const v = (State.draft[c.id] || '').trim();
                 if (!v) continue;
-                lines.push(`${c.label}: ${v.replace(/\n+/g, ' ')}`);
+                if (s.id === 'mse' && lines[lines.length - 1] !== '') lines.push('');
+                lines.push(v);
             }
         } else {
             const v = (State.draft[s.id] || '').trim();
@@ -1612,6 +1802,23 @@ function buildField(label, type, value, onChange, help) {
     row.appendChild(inp);
     if (help) row.appendChild(el('div', { class: 'help' }, help));
     return row;
+}
+
+function openDrugSearch(kind) {
+    const input = $('#drug-query');
+    const raw = input ? input.value.trim() : '';
+    if (!raw) {
+        toast('enter a drug name');
+        if (input) input.focus();
+        return;
+    }
+    const q = encodeURIComponent(raw);
+    const urls = {
+        bnf: `https://bnf.nice.org.uk/search/?q=${q}`,
+        fda: `https://dailymed.nlm.nih.gov/dailymed/search.cfm?labeltype=all&query=${q}`,
+        drugs: `https://www.drugs.com/search.php?searchterm=${q}`
+    };
+    window.open(urls[kind], '_blank', 'noopener,noreferrer');
 }
 
 $('#btn-settings').addEventListener('click', openSettings);
@@ -2207,6 +2414,19 @@ $('#ai-panel-close').addEventListener('click', () => {
 });
 
 $('#btn-check-validity').addEventListener('click', () => runAIFunction('check_validity'));
+
+const drugInput = $('#drug-query');
+if (drugInput) {
+    drugInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            openDrugSearch('bnf');
+        }
+    });
+}
+$('#drug-bnf').addEventListener('click', () => openDrugSearch('bnf'));
+$('#drug-fda').addEventListener('click', () => openDrugSearch('fda'));
+$('#drug-drugs').addEventListener('click', () => openDrugSearch('drugs'));
 
 /* ─── COPY MARKDOWN ─── */
 $('#btn-copy-md').addEventListener('click', async () => {
