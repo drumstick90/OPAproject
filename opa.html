@@ -456,6 +456,7 @@ main {
 }
 .section:hover .section-actions,
 .section:focus-within .section-actions { opacity: 1; }
+.section[data-id="plan"] .section-actions { opacity: 1; }
 
 .mini-btn {
     appearance: none;
@@ -853,6 +854,61 @@ textarea.field:focus {
     box-shadow: 0 0 0 3px var(--accent-soft);
 }
 
+.plan-monitoring {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    margin: 0;
+}
+.plan-action {
+    position: relative;
+}
+.plan-drug-btn,
+.plan-bubble button {
+    appearance: none;
+    border: 1px solid currentColor;
+    background: transparent;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    text-transform: lowercase;
+    padding: 4px 9px;
+    border-radius: var(--r-pill);
+    cursor: pointer;
+    transition: background 120ms ease, box-shadow 120ms ease;
+}
+.plan-drug-btn[data-kind="antipsychotics"] {
+    color: var(--accent);
+}
+.plan-drug-btn[data-kind="valproate"] {
+    color: var(--warn);
+}
+.plan-drug-btn[data-kind="lithium"] {
+    color: var(--ok);
+}
+.plan-drug-btn:hover,
+.plan-bubble button:hover {
+    background: var(--inset);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.plan-bubble {
+    position: absolute;
+    top: calc(100% + 7px);
+    right: 0;
+    z-index: 60;
+    display: none;
+    gap: 5px;
+    padding: 6px;
+    background: var(--inset);
+    border: 1px solid var(--border);
+    border-radius: var(--r-pill);
+    box-shadow: var(--shadow-md);
+}
+.plan-action.open .plan-bubble { display: flex; }
+.plan-bubble button {
+    color: var(--ink-2);
+    white-space: nowrap;
+}
+
 /* Spinner */
 .spin {
     display: inline-block;
@@ -1193,8 +1249,7 @@ body.screening-open .screening-panel { display: block; }
             <span class="sub">outpatient assessment</span>
         </div>
         <div class="head-actions">
-            <button class="icon-btn" id="btn-frasario">frasario</button>
-            <button class="icon-btn" id="btn-questionnaire">questionnaires</button>
+            <button class="icon-btn" id="btn-frasario">Phrases</button>
             <button class="icon-btn" id="btn-screening">screening</button>
             <button class="icon-btn" id="btn-settings">settings</button>
         </div>
@@ -1234,9 +1289,10 @@ body.screening-open .screening-panel { display: block; }
 <main>
     <div class="intro">
         <h1>outpatient assessment <em>workspace</em></h1>
-        <p>auto-saved locally · anything sent to openai is redacted &amp; previewed</p>
+        <p>auto-saved locally</p>
     </div>
 
+    <!--
     <section class="gpt-launch" aria-label="my custom gpts">
         <div class="gpt-launch-head">
             <span class="gpt-launch-title">my gpts<span class="dot">·</span></span>
@@ -1275,6 +1331,7 @@ body.screening-open .screening-panel { display: block; }
             </a>
         </div>
     </section>
+    -->
 
     <section class="drug-launch" aria-label="drug search">
         <div class="drug-launch-head">
@@ -1289,6 +1346,7 @@ body.screening-open .screening-panel { display: block; }
         </div>
     </section>
 
+    <div id="diagnosis-form"></div>
     <div id="form"></div>
 </main>
 <aside id="screening-panel" class="screening-panel"></aside>
@@ -1320,14 +1378,32 @@ const LS = {
     CACHE:    'opa.cache.v1'
 };
 
+const DIAGNOSIS_SECTION = {
+    id: 'diagnosis',
+    label: 'Diagnosis',
+    default: 'Current diagnosis:\n\nH/O of \n\nFamily history of - '
+};
+
+const GP_MONITORING_INSTRUCTIONS = {
+    antipsychotics: 'GP kindly ensure physical health checks as per NICE guidelines on antipsychotics, including monitoring of weight/BMI, BP, FBC, U+Es, LFTs, TFTs, HbA1c, fasting lipids, fasting glucose, prolactin, and perform annual ECG, looking specifically for QTc interval prolongation. Fasting blood glucose every 6 months.',
+    valproate: 'GP kindly ensure valproate monitoring as per NICE CG185 and MHRA safety advice: measure weight/BMI and carry out FBC and LFTs; repeat weight/BMI, FBC and LFTs after 6 months of treatment and annually thereafter. Do not routinely measure plasma valproate levels unless there is evidence of ineffectiveness, poor adherence or toxicity. Please ensure ongoing MHRA valproate safety requirements are followed, including Pregnancy Prevention Programme where applicable.',
+    lithium: 'GP kindly ensure lithium monitoring as per NICE CG185: check plasma lithium levels every 3 months for the first year, then every 6 months thereafter, or every 3 months for older people, people taking interacting drugs, people at risk of impaired renal or thyroid function or raised calcium, people with poor symptom control or poor adherence, or where the last lithium level was 0.8 mmol/L or higher. Measure weight/BMI and arrange U+Es including calcium, eGFR and TFTs every 6 months; monitor more often if renal or thyroid function is impaired, calcium is raised, or mood symptoms suggest thyroid dysfunction.'
+};
+
+const GP_INITIATION_INSTRUCTIONS = {
+    antipsychotics: 'Before starting antipsychotic medication, please ensure baseline weight/BMI, pulse, BP, fasting glucose or HbA1c, and blood lipid profile are measured and recorded as per NICE CG185. Offer ECG if specified in the SPC, if cardiovascular risk is identified, if there is family history of cardiovascular disease, sudden collapse or arrhythmia, or if the person is being admitted as an inpatient. During titration, monitor pulse and BP after each dose change, weight/BMI weekly for the first 6 weeks and again at 12 weeks, and fasting glucose or HbA1c and lipid profile at 12 weeks.',
+    valproate: 'Valproate should not be initiated in primary care for bipolar disorder. If valproate is being initiated by the specialist team, please follow NICE CG185 and MHRA safety advice: confirm reproductive-risk requirements, including under-55 restrictions and Pregnancy Prevention Programme where applicable; measure baseline weight/BMI and carry out FBC and LFTs before starting; advise on symptoms of blood or liver disorders and to seek urgent medical help if these occur.',
+    lithium: 'Lithium should not be initiated in primary care for bipolar disorder unless under shared-care arrangements. If lithium is being initiated under shared care, please measure baseline weight/BMI and arrange U+Es including calcium, eGFR, TFTs and FBC; arrange ECG if cardiovascular disease or risk factors are present; provide lithium safety information; measure plasma lithium 1 week after starting and 1 week after each dose change, then weekly until levels are stable, aiming initially for 0.6-0.8 mmol/L unless otherwise advised.'
+};
+
+const DEFAULT_PLAN_TAIL = 'advised to consider moderate physical activity\n\nPatient aware can contact AH/GP/SPA/NHS 111 numbers if in crisis; contacts shared.\n\nOPA in 3 months.';
+
 const TEMPLATE = {
     sections: [
         { id: 'intervention', label: 'Intervention',
           default: 'OPA F2F' },
         { id: 'reason', label: 'Reason for Assessment',
           default: '', placeholder: 'e.g. Routine follow-up; new referral from GP for…' },
-        { id: 'diagnosis', label: 'Diagnosis',
-          default: 'Current diagnosis:\n\nH/O of \n\nFamily history of - ' },
         { id: 'medications', label: 'Medications',
           default: 'Current medications:\nAdherence:\nSide effects:\nAllergies: ' },
         { id: 'other_medical_conditions', label: 'Other Medical Conditions',
@@ -1336,7 +1412,7 @@ const TEMPLATE = {
           default: 'Presenting Concerns / Chief complaints\n\n' },
         { id: 'breastfeeding', label: 'Breastfeeding or Pregnant?',
           default: '', placeholder: 'N/A · or specify' },
-        { id: 'housing', label: 'Housing & Financials', default: '' },
+        { id: 'housing', label: 'Housing & Finances', default: '' },
         { id: 'stressors', label: 'Stressors', default: '' },
         { id: 'physical_activity', label: 'Physical Activity',
           default: 'Physical activity: ' },
@@ -1347,7 +1423,7 @@ const TEMPLATE = {
             { id: 'mse_appearance',         label: 'Appearance & Behaviour',
               default: 'WK, good eye contact, pleasant manners, good rapport.' },
             { id: 'mse_speech',             label: 'Speech',
-              default: 'Nil impairment of speech nor pressure of speech.' },
+              default: 'No speech impairment or pressure of speech.' },
             { id: 'mse_agitation',          label: 'Agitation / Restlessness',
               default: 'No restlessness observed.' },
             { id: 'mse_anxiety',            label: 'Anxiety',
@@ -1363,9 +1439,9 @@ const TEMPLATE = {
             { id: 'mse_perception',         label: 'Perception',
               default: 'Denies perceptual disturbances including visual and auditory hallucinations. No distractibility.' },
             { id: 'mse_dissociative',       label: 'Dissociative Symptoms',
-              default: 'Denies dissociative symptoms.' },
+              default: 'Denies dissociative symptoms (depersonalisation, derealisation, dissociative amnesia, identity disturbance).' },
             { id: 'mse_suicidality',        label: 'Suicidality & Aggression',
-              default: 'Denies suicidal thoughts, intentions or plans. No NSSH. Denies thoughts of harming others.' },
+              default: 'Denies suicidal thoughts, intentions or plans. No non-suicidal self-harm. Denies thoughts of harming others.' },
             { id: 'mse_family_suicidality', label: 'Family History of Suicidality',
               default: 'No family history of suicide attempts.' },
             { id: 'mse_cognition',          label: 'Cognition',
@@ -1389,7 +1465,7 @@ Safety plan and crisis contacts shared.` },
         { id: 'capacity', label: 'Capacity',
           default: 'Yes — patient has capacity to consent to and accept treatment.' },
         { id: 'plan', label: 'Plan',
-          default: 'GP kindly ensure physical health checks as per NICE guidelines on antipsychotics, including monitoring of weight/BMI, BP, FBC, U+Es, LFTs, TFTs, HbA1c, fasting lipids, fasting glucose, prolactin, and perform annual ECG, looking specifically for QTc interval prolongation. Fasting blood glucose every 6 months.\n\nadvised to consider moderate physical activity\n\nPatient aware can contact AH/GP/SPA/NHS 111 numbers if in crisis; contacts shared.\n\nOPA in 3 months.' }
+          default: `${GP_MONITORING_INSTRUCTIONS.antipsychotics}\n\n${DEFAULT_PLAN_TAIL}` }
     ]
 };
 
@@ -1506,7 +1582,7 @@ function el(tag, props, ...children) {
 }
 
 function flattenSections() {
-    const out = [];
+    const out = [DIAGNOSIS_SECTION];
     for (const s of TEMPLATE.sections) {
         if (s.group) for (const c of s.children) out.push(c);
         else out.push(s);
@@ -1538,6 +1614,13 @@ function setStatus(text, kind = 'ok') {
 }
 
 /* ─── RENDER ─── */
+function renderDiagnosisField() {
+    const root = $('#diagnosis-form');
+    if (!root) return;
+    root.innerHTML = '';
+    root.appendChild(renderSection(DIAGNOSIS_SECTION, 'dx'));
+}
+
 function renderForm() {
     const root = $('#form');
     root.innerHTML = '';
@@ -1570,7 +1653,7 @@ function renderForm() {
 }
 
 function renderSection(s, n) {
-    const numStr = String(n).padStart(2, '0');
+    const numStr = typeof n === 'number' ? String(n).padStart(2, '0') : String(n);
     const value = State.draft[s.id] != null ? State.draft[s.id] : (s.default || '');
     State.draft[s.id] = value;
 
@@ -1581,7 +1664,8 @@ function renderSection(s, n) {
             s.label
         ),
         el('div', { class: 'section-actions' },
-            el('button', { class: 'mini-btn', onclick: () => openFrasario(s.id) }, '✦ frasario'),
+            s.id === 'plan' ? renderPlanMonitoringButtons() : null,
+            el('button', { class: 'mini-btn', onclick: () => openFrasario(s.id) }, '✦ phrases'),
             el('button', { class: 'mini-btn', onclick: () => resetField(s.id) }, '↺ default'),
             cacheHas(s.id) ? el('button', { class: 'mini-btn', style: 'color:var(--accent)', onclick: () => revertField(s.id) }, '⟲ revert') : null
         )
@@ -1613,6 +1697,29 @@ function renderSubsection(c) {
     );
 }
 
+function renderPlanMonitoringButtons() {
+    return el('div', { class: 'plan-monitoring', 'aria-label': 'GP monitoring instructions' },
+        renderPlanDrugAction('antipsychotics'),
+        renderPlanDrugAction('valproate'),
+        renderPlanDrugAction('lithium')
+    );
+}
+
+function renderPlanDrugAction(kind) {
+    return el('div', { class: 'plan-action' },
+        el('button', {
+            type: 'button',
+            class: 'plan-drug-btn',
+            'data-kind': kind,
+            onclick: (e) => togglePlanActionBubble(e)
+        }, kind),
+        el('div', { class: 'plan-bubble' },
+            el('button', { type: 'button', onclick: (e) => setPlanInstruction(e, kind, 'initiation') }, 'initiation'),
+            el('button', { type: 'button', onclick: (e) => setPlanInstruction(e, kind, 'monitoring') }, 'monitoring')
+        )
+    );
+}
+
 /* ─── FIELD OPS ─── */
 function resetField(id) {
     const meta = getSectionMeta(id);
@@ -1622,6 +1729,43 @@ function resetField(id) {
     const t = $(`textarea[data-id="${id}"]`);
     if (t) { t.value = State.draft[id]; autosize(t); }
 }
+
+function closePlanActionBubbles() {
+    $$('.plan-action.open').forEach(a => a.classList.remove('open'));
+}
+
+function togglePlanActionBubble(event) {
+    event.stopPropagation();
+    const action = event.currentTarget.closest('.plan-action');
+    const wasOpen = action.classList.contains('open');
+    closePlanActionBubbles();
+    if (!wasOpen) action.classList.add('open');
+}
+
+function setPlanInstruction(event, kind, mode) {
+    event.stopPropagation();
+    const instructions = mode === 'initiation' ? GP_INITIATION_INSTRUCTIONS : GP_MONITORING_INSTRUCTIONS;
+    const instruction = instructions[kind];
+    if (!instruction) return;
+
+    const current = State.draft.plan || getSectionMeta('plan').default || '';
+    const parts = current.split(/\n\s*\n/);
+    const tail = parts.length > 1 ? parts.slice(1).join('\n\n') : DEFAULT_PLAN_TAIL;
+    const next = `${instruction}\n\n${tail}`.trim();
+
+    State.draft.plan = next;
+    saveDraft();
+
+    const t = $('textarea[data-id="plan"]');
+    if (t) {
+        t.value = next;
+        autosize(t);
+        t.focus();
+    }
+    closePlanActionBubbles();
+    toast(`${kind} ${mode} inserted`);
+}
+
 function cacheHas(id) { return State.cache && State.cache[id] != null; }
 function cacheSet(id, prev) { State.cache[id] = prev; saveCache(); }
 function cacheClear(id) { delete State.cache[id]; saveCache(); }
@@ -1675,7 +1819,13 @@ function escapeHtml(s) {
 /* ─── ASSEMBLE NOTE (markdown — uses canonical proper-case labels) ─── */
 function assembleMarkdown() {
     const lines = [];
+    const diagnosis = (State.draft[DIAGNOSIS_SECTION.id] || '').trim();
     for (const s of TEMPLATE.sections) {
+        if (s.id === 'medications' && diagnosis) {
+            lines.push('');
+            lines.push(DIAGNOSIS_SECTION.label);
+            lines.push(diagnosis);
+        }
         if (s.group) {
             lines.push('');
             for (const c of s.children) {
@@ -1710,7 +1860,13 @@ function closeDrawer() {
 }
 $('#drawer-close').addEventListener('click', closeDrawer);
 $('#scrim').addEventListener('click', closeDrawer);
-document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDrawer(); });
+document.addEventListener('click', closePlanActionBubbles);
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        closeDrawer();
+        closePlanActionBubbles();
+    }
+});
 
 /* ─── SETTINGS ─── */
 function openSettings() {
@@ -1749,7 +1905,7 @@ function openSettings() {
     wrap.appendChild(sFns);
 
     const sFra = el('div', { class: 'drawer-section' });
-    sFra.appendChild(el('h3', null, 'frasario (json)'));
+    sFra.appendChild(el('h3', null, 'phrases (json)'));
     const fraTa = el('textarea', { rows: 8 });
     fraTa.value = JSON.stringify(State.frasario, null, 2);
     sFra.appendChild(el('div', { class: 'field-row' }, fraTa,
@@ -1759,9 +1915,9 @@ function openSettings() {
         try {
             State.frasario = JSON.parse(fraTa.value);
             saveFrasario();
-            toast('frasario saved');
+            toast('phrases saved');
         } catch (e) { toast('invalid json'); }
-    }}, 'save frasario'));
+    }}, 'save phrases'));
     wrap.appendChild(sFra);
 
     const sQ = el('div', { class: 'drawer-section' });
@@ -1785,7 +1941,7 @@ function openSettings() {
     sDan.appendChild(el('div', { class: 'field-row help' },
         'all data lives in localstorage on this device.'));
     sDan.appendChild(el('button', { class: 'tb-btn', onclick: () => {
-        if (!confirm('clear all local data (draft, settings, frasario, registry, cache)?')) return;
+        if (!confirm('clear all local data (draft, settings, phrases, registry, cache)?')) return;
         Object.values(LS).forEach(k => localStorage.removeItem(k));
         location.reload();
     }}, 'wipe all local data'));
@@ -1828,7 +1984,7 @@ function openFrasario(targetSectionId) {
     const wrap = el('div');
     if (!State.frasario.categories || !State.frasario.categories.length) {
         wrap.appendChild(el('div', { class: 'frasario-empty' },
-            'no phrases yet. add them in settings → frasario.'));
+            'no phrases yet. add them in settings → phrases.'));
     } else {
         for (const cat of State.frasario.categories) {
             const isMatch = !targetSectionId || cat.target === targetSectionId;
@@ -1845,7 +2001,7 @@ function openFrasario(targetSectionId) {
             wrap.appendChild(cWrap);
         }
     }
-    openDrawer('<span class="accent">·</span> frasario' +
+    openDrawer('<span class="accent">·</span> phrases' +
         (targetSectionId ? ` <span style="color:var(--ink-3); font-weight:400">→ ${targetSectionId}</span>` : ''),
         wrap);
 }
@@ -1934,7 +2090,8 @@ window.addEventListener('message', (ev) => {
     }, 250);
 });
 
-$('#btn-questionnaire').addEventListener('click', openQuestionnaires);
+const questionnaireBtn = $('#btn-questionnaire');
+if (questionnaireBtn) questionnaireBtn.addEventListener('click', openQuestionnaires);
 
 /* ─── SCREENING ─── */
 
@@ -2057,6 +2214,96 @@ const SCREENING_TOOLS = {
             return `The patient completed the MSI-BPD today, scoring ${score}/10 — below the screening cut-off of ≥7 and not consistent with a borderline personality disorder presentation. The following symptoms were reported: ${s}.`;
         },
         footer: `<p><strong>Reference:</strong> Zanarini MC et al. (2003). <em>Journal of Personality Disorders</em>, 17(6), 568–573.</p><p>Indeterminate-range note based on Zimmerman M &amp; Balling C (2021). <em>Journal of Personality Disorders</em>, 35(2), 288–298.</p>`
+    },
+    mdq: {
+        slug: 'mdq',
+        title: { plain: 'MD', em: 'Q' },
+        subtitle: 'Mood Disorder Questionnaire — bipolar spectrum screening',
+        instructions: `<strong>Instructions.</strong> Has there ever been a period of time when you were not your usual self? Items 1–13 score 1 point for <em>Yes</em>. Positive screening requires: <strong>≥7/13</strong> symptoms endorsed, <strong>Yes</strong> to same-period clustering on item 14, and <strong>Moderate</strong> or <strong>Serious</strong> impairment on item 15.`,
+        format: 'binary',
+        scoreDenominator: 13,
+        options: [
+            { value: 'yes', label: 'Yes', score: 1 },
+            { value: 'no',  label: 'No',  score: 0 }
+        ],
+        columnLabels: ['Yes', 'No'],
+        questions: [
+            { id: 1, text: "...you felt so good or so hyper that other people thought you were not your normal self or you were so hyper that you got into trouble?", short: "elevated / hyper mood" },
+            { id: 2, text: "...you were so irritable that you shouted at people or started fights or arguments?", short: "marked irritability" },
+            { id: 3, text: "...you felt much more self-confident than usual?", short: "increased self-confidence" },
+            { id: 4, text: "...you got much less sleep than usual and found you didn't really miss it?", short: "decreased need for sleep" },
+            { id: 5, text: "...you were much more talkative or spoke faster than usual?", short: "increased talkativeness" },
+            { id: 6, text: "...thoughts raced through your head or you couldn't slow your mind down?", short: "racing thoughts" },
+            { id: 7, text: "...you were so easily distracted by things around you that you had trouble concentrating or staying on track?", short: "distractibility" },
+            { id: 8, text: "...you had much more energy than usual?", short: "increased energy" },
+            { id: 9, text: "...you were much more active or did many more things than usual?", short: "increased activity" },
+            { id: 10, text: "...you were much more social or outgoing than usual, for example, you telephoned friends in the middle of the night?", short: "increased sociability" },
+            { id: 11, text: "...you were much more interested in sex than usual?", short: "increased sexual interest" },
+            { id: 12, text: "...you did things that were unusual for you or that other people might have thought were excessive, foolish, or risky?", short: "excessive / risky behaviour" },
+            { id: 13, text: "...spending money got you or your family into trouble?", short: "problematic spending" },
+            { id: 14, text: "If you checked Yes to more than one of the above, have several of these ever happened during the same period of time?", short: "same-period clustering" },
+            {
+                id: 15,
+                text: "How much of a problem did any of these cause you — like being unable to work; having family, money, or legal troubles; getting into arguments or fights?",
+                short: "impairment",
+                format: 'likert4',
+                columnLabels: ['No<br>problem', 'Minor<br>problem', 'Moderate<br>problem', 'Serious<br>problem'],
+                options: [
+                    { value: 'none', label: 'No problem', short: 'No problem', score: 0 },
+                    { value: 'minor', label: 'Minor problem', short: 'Minor', score: 1 },
+                    { value: 'moderate', label: 'Moderate problem', short: 'Moderate', score: 2 },
+                    { value: 'serious', label: 'Serious problem', short: 'Serious', score: 3 }
+                ]
+            }
+        ],
+        scoreItem: (q, opt) => opt.score === 1,
+        computeResult: function(state) {
+            const symptomItems = this.questions.filter(q => q.id >= 1 && q.id <= 13);
+            const endorsed = symptomItems.filter(q => state.answers[q.id] === 'yes');
+            const score = endorsed.length;
+            const symptomPercent = Math.round((score / 13) * 100);
+            const samePeriod = state.answers[14] === 'yes';
+            const impairmentOpt = this.questions.find(q => q.id === 15).options.find(o => o.value === state.answers[15]);
+            const impairmentScore = impairmentOpt ? impairmentOpt.score : 0;
+            const impairmentMeets = impairmentScore >= 2;
+            const positiveItems = [3, 4, 8, 9];
+            const negativeItems = [1, 2, 6, 7, 12, 13];
+            const positiveActivation = endorsed.filter(q => positiveItems.includes(q.id)).length;
+            const negativeActivation = endorsed.filter(q => negativeItems.includes(q.id)).length;
+            const positive = score >= 7 && samePeriod && impairmentMeets;
+
+            return {
+                score,
+                band: positive ? 'elevated' : 'below',
+                endorsed,
+                symptomPercent,
+                samePeriod,
+                impairmentLabel: impairmentOpt ? impairmentOpt.label : 'not answered',
+                impairmentScore,
+                positiveActivation,
+                positiveActivationPercent: Math.round((positiveActivation / positiveItems.length) * 100),
+                negativeActivation,
+                negativeActivationPercent: Math.round((negativeActivation / negativeItems.length) * 100)
+            };
+        },
+        bandHeadline: (score, band, result) => band === 'elevated'
+            ? `Score ${score}/13 (${result.symptomPercent}%) · positive MDQ screen`
+            : `Score ${score}/13 (${result.symptomPercent}%) · threshold not met`,
+        bandBody: (score, band, endorsed, result) => {
+            const criteria = `<p>MDQ criteria: symptom score ${score}/13 (${result.symptomPercent}%); same-period clustering ${result.samePeriod ? 'endorsed' : 'not endorsed'}; impairment rated ${result.impairmentLabel.toLowerCase()}.</p>`;
+            const subscales = `<p>Subscales: Positive Activation ${result.positiveActivation}/4 (${result.positiveActivationPercent}%); Negative Activation ${result.negativeActivation}/6 (${result.negativeActivationPercent}%). Items 5, 10, and 11 are not included in the subscale model.</p>`;
+            if (band === 'elevated') return `${criteria}<p>The MDQ positive-screening threshold is met. This is a screening result and should be interpreted alongside longitudinal history, collateral information, substance/medication effects, and differential diagnoses.</p>${subscales}`;
+            return `${criteria}<p>The MDQ positive-screening threshold is not met on this administration. This does not exclude bipolar spectrum disorder where clinical suspicion remains.</p>${subscales}`;
+        },
+        endorsedRender: (endorsed) => endorsed.map(e => e.short),
+        opaProse: (score, band, endorsed, result) => {
+            const endorsedText = endorsed.length ? ` Endorsed symptom items: ${sListJoin(endorsed.map(e => e.short), ', ')}.` : '';
+            const criteriaText = `symptom score ${score}/13 (${result.symptomPercent}%), same-period clustering ${result.samePeriod ? 'endorsed' : 'not endorsed'}, impairment rated ${result.impairmentLabel.toLowerCase()}`;
+            const subscaleText = `Positive Activation ${result.positiveActivation}/4 (${result.positiveActivationPercent}%); Negative Activation ${result.negativeActivation}/6 (${result.negativeActivationPercent}%)`;
+            if (band === 'elevated') return `The patient completed the MDQ today: ${criteriaText}. This meets the MDQ positive-screening threshold for bipolar spectrum disorder. Subscale scores: ${subscaleText}.${endorsedText}`;
+            return `The patient completed the MDQ today: ${criteriaText}. This does not meet the MDQ positive-screening threshold for bipolar spectrum disorder. Subscale scores: ${subscaleText}.${endorsedText}`;
+        },
+        footer: `<p><strong>Reference:</strong> Hirschfeld RM et al. (2000). <em>American Journal of Psychiatry</em>, 157(11), 1873–1875.</p><p>MDQ scoring: positive screen requires ≥7 endorsed symptoms on items 1–13, same-period clustering, and moderate or serious impairment.</p><p>This tool is a screening aid, not a diagnostic instrument.</p>`
     }
 };
 
@@ -2094,7 +2341,7 @@ function openScreeningTool(tool) {
     badge.appendChild(el('div', { class: 's-score-label' }, 'score'));
     badge.appendChild(el('div', { class: 's-score-value' },
         el('span', { id: 's-score-num' }, '0'),
-        el('span', { class: 's-score-denom' }, `/${tool.questions.length}`)
+        el('span', { class: 's-score-denom' }, `/${tool.scoreDenominator || tool.questions.length}`)
     ));
     badge.appendChild(el('div', { class: 's-score-progress', id: 's-score-progress' }, `0 of ${tool.questions.length} answered`));
     hdr.appendChild(badge);
@@ -2122,16 +2369,25 @@ function openScreeningTool(tool) {
     wrap.appendChild(instr);
 
     const qTable = el('div', { class: 's-q-table', id: 's-q-table' });
-    const hRow = el('div', { class: `s-q-header s-${tool.format}` });
-    hRow.innerHTML = `<div></div><div></div>${tool.columnLabels.map(l => `<div class="s-q-col-label">${l}</div>`).join('')}`;
-    qTable.appendChild(hRow);
+    if (tool.columnLabels && tool.columnLabels.length) {
+        const hRow = el('div', { class: `s-q-header s-${tool.format}` });
+        hRow.innerHTML = `<div></div><div></div>${tool.columnLabels.map(l => `<div class="s-q-col-label">${l}</div>`).join('')}`;
+        qTable.appendChild(hRow);
+    }
     tool.questions.forEach(q => {
-        const row = el('div', { class: `s-q-row s-${tool.format}`, 'data-sqid': String(q.id) });
+        const qOptions = q.options || tool.options;
+        const qFormat = q.format || tool.format;
+        if (q.columnLabels && q.columnLabels.length) {
+            const qHeader = el('div', { class: `s-q-header s-${qFormat}` });
+            qHeader.innerHTML = `<div></div><div></div>${q.columnLabels.map(l => `<div class="s-q-col-label">${l}</div>`).join('')}`;
+            qTable.appendChild(qHeader);
+        }
+        const row = el('div', { class: `s-q-row s-${qFormat}`, 'data-sqid': String(q.id) });
         row.innerHTML = `
             <div class="s-q-num">${String(q.id).padStart(2, '0')}</div>
             <div class="s-q-text">${q.text}${q.criterion ? `<span class="s-criterion">${q.criterion}</span>` : ''}</div>
-            ${tool.options.map(opt => `<div class="s-q-cell"><input type="radio" name="sq${q.id}" value="${opt.value}" id="sq${q.id}_${opt.value}" aria-label="${opt.label}"></div>`).join('')}
-            <div class="s-q-options-mobile">${tool.options.map(opt => `<label data-svalue="${opt.value}" data-sqid="${q.id}">${opt.short || opt.label}</label>`).join('')}</div>
+            ${qOptions.map(opt => `<div class="s-q-cell"><input type="radio" name="sq${q.id}" value="${opt.value}" id="sq${q.id}_${opt.value}" aria-label="${opt.label}"></div>`).join('')}
+            <div class="s-q-options-mobile">${qOptions.map(opt => `<label data-svalue="${opt.value}" data-sqid="${q.id}">${opt.short || opt.label}</label>`).join('')}</div>
         `;
         qTable.appendChild(row);
     });
@@ -2187,20 +2443,26 @@ function sUpdateMobileSelection(qid, val) {
 }
 
 function sScreeningCompute() {
+    if (sActiveTool.computeResult) return sActiveTool.computeResult(sState);
+
     let score = 0;
     const endorsed = [];
     sActiveTool.questions.forEach(q => {
         const ans = sState.answers[q.id];
         if (!ans) return;
-        const opt = sActiveTool.options.find(o => o.value === ans);
-        if (sActiveTool.scoreItem(q, opt)) { score++; endorsed.push(q); }
+        const opt = (q.options || sActiveTool.options).find(o => o.value === ans);
+        const itemScore = sActiveTool.scoreItem(q, opt);
+        const points = typeof itemScore === 'number' ? itemScore : (itemScore ? 1 : 0);
+        score += points;
+        if (points > 0) endorsed.push(q);
     });
     return { score, band: sActiveTool.band(score), endorsed };
 }
 
 function sScreeningRecompute() {
     if (!sActiveTool) return;
-    const { score, band, endorsed } = sScreeningCompute();
+    const result = sScreeningCompute();
+    const { score, band, endorsed } = result;
     const answered = Object.keys(sState.answers).length;
     const total = sActiveTool.questions.length;
 
@@ -2232,8 +2494,8 @@ function sScreeningRecompute() {
                 : '';
             panel.innerHTML = `
                 <div class="s-result-eyebrow">${eyebrow}</div>
-                <div class="s-result-headline">${escapeHtml(sActiveTool.bandHeadline(score, band))}</div>
-                <div class="s-result-body">${sActiveTool.bandBody(score, band)}</div>
+                <div class="s-result-headline">${escapeHtml(sActiveTool.bandHeadline(score, band, result))}</div>
+                <div class="s-result-body">${sActiveTool.bandBody(score, band, endorsed, result)}</div>
                 ${endorsedHtml}
             `;
         }
@@ -2252,8 +2514,9 @@ function sScreeningRecompute() {
 }
 
 function sDoInsert(sectionId) {
-    const { score, band, endorsed } = sScreeningCompute();
-    doInsert(sectionId, sActiveTool.opaProse(score, band, endorsed));
+    const result = sScreeningCompute();
+    const { score, band, endorsed } = result;
+    doInsert(sectionId, sActiveTool.opaProse(score, band, endorsed, result));
     toast('inserted into clinical summary');
 }
 
@@ -2447,11 +2710,13 @@ $('#btn-clear').addEventListener('click', () => {
     State.draft = {};
     State.cache = {};
     saveDraft(); saveCache();
+    renderDiagnosisField();
     renderForm();
     toast('reset to defaults');
 });
 
 /* ─── INIT ─── */
+renderDiagnosisField();
 renderForm();
 if (State.settings.apiKey) setStatus('redacted before send');
 else setStatus('no api key set', 'warn');
