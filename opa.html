@@ -1089,19 +1089,23 @@ textarea.field:focus {
 }
 
 .s-q-cell { display: flex; justify-content: center; }
-.s-q-cell input[type="radio"] {
+.s-q-cell input[type="radio"],
+.s-choice-option input[type="radio"] {
     appearance: none; -webkit-appearance: none;
     width: 15px; height: 15px; border: 1.5px solid var(--ink-3);
     border-radius: 50%; cursor: pointer; position: relative;
     transition: all 120ms; background: transparent;
 }
-.s-q-cell input[type="radio"]:hover {
+.s-q-cell input[type="radio"]:hover,
+.s-choice-option input[type="radio"]:hover {
     border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft);
 }
-.s-q-cell input[type="radio"]:checked {
+.s-q-cell input[type="radio"]:checked,
+.s-choice-option input[type="radio"]:checked {
     border-color: var(--accent); background: var(--accent);
 }
-.s-q-cell input[type="radio"]:checked::after {
+.s-q-cell input[type="radio"]:checked::after,
+.s-choice-option input[type="radio"]:checked::after {
     content: ''; position: absolute; top: 50%; left: 50%;
     transform: translate(-50%,-50%); width: 5px; height: 5px;
     background: white; border-radius: 50%;
@@ -1119,6 +1123,39 @@ textarea.field:focus {
 }
 .s-q-options-mobile label.selected {
     background: var(--accent); color: white; border-color: var(--accent);
+}
+
+.s-q-row.s-choices {
+    display: block; min-width: 0; margin: 0 0 14px; padding: 0 0 14px;
+    border: 0; border-bottom: 1px solid var(--border-2);
+}
+.s-choice-question {
+    display: flex; gap: 8px; align-items: baseline;
+    width: 100%; padding: 0; margin-bottom: 8px;
+}
+.s-choice-question .s-q-num { flex: 0 0 26px; }
+.s-choice-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.s-choice-option {
+    display: flex; align-items: center; gap: 8px; min-width: 0;
+    padding: 8px; border: 1px solid var(--border); border-radius: var(--r-mini);
+    background: var(--inset); color: var(--ink); font-size: 12px; line-height: 1.4;
+    cursor: pointer;
+}
+.s-choice-option input[type="radio"] { flex: 0 0 15px; margin: 0; }
+.s-choice-option:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+.s-choice-option:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+.s-choice-option:has(input:disabled) { opacity: .5; cursor: default; }
+.s-choice-option input:disabled { cursor: default; }
+.s-question-variant { display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; }
+.s-question-variant label { font-family: var(--mono); font-size: 10px; color: var(--ink-2); }
+.s-question-variant select {
+    width: 100%; min-height: 36px; padding: 6px 8px; border: 1px solid var(--border);
+    border-radius: var(--r-input); background: var(--inset); color: var(--ink);
+    font-family: var(--sans); font-size: 13px;
+}
+@media (max-width: 420px) {
+    .s-choice-options { grid-template-columns: 1fr; }
+    .s-question-variant select { font-size: 16px; }
 }
 
 @media (max-width: 720px) {
@@ -2129,6 +2166,15 @@ function sPanelWrap(titleHtml, content) {
     panel.appendChild(content);
 }
 
+const ASEX_EASE_OPTIONS = [
+    { value: '1', label: 'Extremely easily', score: 1 },
+    { value: '2', label: 'Very easily', score: 2 },
+    { value: '3', label: 'Somewhat easily', score: 3 },
+    { value: '4', label: 'Somewhat difficult', score: 4 },
+    { value: '5', label: 'Very difficult', score: 5 },
+    { value: '6', label: 'Never', score: 6 }
+];
+
 const SCREENING_TOOLS = {
     aq10: {
         slug: 'aq10',
@@ -2304,6 +2350,92 @@ const SCREENING_TOOLS = {
             return `The patient completed the MDQ today: ${criteriaText}. This does not meet the MDQ positive-screening threshold for bipolar spectrum disorder. Subscale scores: ${subscaleText}.${endorsedText}`;
         },
         footer: `<p><strong>Reference:</strong> Hirschfeld RM et al. (2000). <em>American Journal of Psychiatry</em>, 157(11), 1873–1875.</p><p>MDQ scoring: positive screen requires ≥7 endorsed symptoms on items 1–13, same-period clustering, and moderate or serious impairment.</p><p>This tool is a screening aid, not a diagnostic instrument.</p>`
+    },
+    asex: {
+        slug: 'asex',
+        storageKey: 'opa.screening.asex.v1',
+        title: { plain: 'ASE', em: 'X' },
+        subtitle: 'Arizona Sexual Experience Scale — sexual function screening',
+        instructions: `<strong>Instructions.</strong> Select one response for each of the five items. For item 3, choose the applicable erection or vaginal lubrication question, then answer it once. Each response scores 1–6; the total ranges from <strong>5–30</strong>, with higher scores indicating greater sexual dysfunction. Complete all five items before interpreting or inserting the result.`,
+        format: 'choices',
+        scoreDenominator: 30,
+        questions: [
+            {
+                id: 1, text: 'How strong is your sex drive?', short: 'Sex drive',
+                options: [
+                    { value: '1', label: 'Extremely strong', score: 1 },
+                    { value: '2', label: 'Very strong', score: 2 },
+                    { value: '3', label: 'Somewhat strong', score: 3 },
+                    { value: '4', label: 'Somewhat weak', score: 4 },
+                    { value: '5', label: 'Very weak', score: 5 },
+                    { value: '6', label: 'Absent', score: 6 }
+                ]
+            },
+            { id: 2, text: 'How easily are you sexually aroused?', short: 'Arousal', options: ASEX_EASE_OPTIONS },
+            {
+                id: 3, text: 'Choose the applicable item 3 question.', short: 'Erection / vaginal lubrication',
+                variants: [
+                    { value: 'erection', label: '3a · Erection', text: 'Can you easily get and keep an erection?', short: 'Erection' },
+                    { value: 'lubrication', label: '3b · Vaginal lubrication', text: 'How easily does your vagina become moist?', short: 'Vaginal lubrication' }
+                ],
+                options: ASEX_EASE_OPTIONS
+            },
+            { id: 4, text: 'How easily can you reach orgasm?', short: 'Ability to reach orgasm', options: ASEX_EASE_OPTIONS },
+            {
+                id: 5, text: 'Are your orgasms satisfying?', short: 'Orgasm satisfaction',
+                options: [
+                    { value: '1', label: 'Extremely satisfying', score: 1 },
+                    { value: '2', label: 'Very satisfying', score: 2 },
+                    { value: '3', label: 'Somewhat satisfying', score: 3 },
+                    { value: '4', label: 'Somewhat unsatisfying', score: 4 },
+                    { value: '5', label: 'Extremely unsatisfying', score: 5 },
+                    { value: '6', label: 'Never achieve orgasm', score: 6 }
+                ]
+            }
+        ],
+        computeResult: function(state) {
+            const items = this.questions.flatMap(q => {
+                const option = q.options.find(o => o.value === (state.answers || {})[q.id]);
+                const variant = q.variants && q.variants.find(v => v.value === (state.variants || {})[q.id]);
+                if (!option || (q.variants && !variant)) return [];
+                return [{ id: q.id, short: variant ? variant.short : q.short, score: option.score, response: option.label }];
+            });
+            const complete = items.length === this.questions.length;
+            const total = items.reduce((sum, item) => sum + item.score, 0);
+            // McGahuey et al. (2000): any one of these three criteria is sufficient.
+            const criteria = [];
+            if (complete) {
+                if (total >= 19) criteria.push('total score ≥19');
+                if (items.some(item => item.score >= 5)) criteria.push('at least one item ≥5');
+                if (items.filter(item => item.score >= 4).length >= 3) criteria.push('at least three items ≥4');
+            }
+            return {
+                score: complete ? total : null,
+                answered: items.length,
+                complete,
+                band: complete ? (criteria.length ? 'elevated' : 'below') : null,
+                endorsed: items.filter(item => item.score >= 4),
+                items,
+                criteria
+            };
+        },
+        bandHeadline: (score, band) => `Score ${score}/30 · ASEX screening criteria ${band === 'elevated' ? 'met' : 'not met'}`,
+        bandBody: (score, band, endorsed, result) => {
+            const interpretation = band === 'elevated'
+                ? `ASEX screening criteria for sexual dysfunction are met: ${result.criteria.join('; ')}.`
+                : 'ASEX screening criteria for sexual dysfunction are not met. A below-threshold result does not exclude a clinically significant difficulty.';
+            const items = result.items.map(item => `${item.short} ${item.score}/6 (${item.response.toLowerCase()})`).join('; ');
+            return `<p>${interpretation}</p><p>Item scores: ${items}.</p><p>Interpret alongside clinical assessment. This scale does not establish the cause of sexual difficulties.</p>`;
+        },
+        opaProse: (score, band, endorsed, result) => {
+            if (!result.complete) return '';
+            const interpretation = band === 'elevated'
+                ? `ASEX screening criteria for sexual dysfunction were met (${result.criteria.join('; ')}).`
+                : 'ASEX screening criteria for sexual dysfunction were not met.';
+            const items = result.items.map(item => `${item.short.toLowerCase()} ${item.score}/6`).join('; ');
+            return `The patient completed the Arizona Sexual Experience Scale (ASEX), scoring ${score}/30 (range 5–30; higher scores indicate greater sexual dysfunction). ${interpretation} Item scores: ${items}. This is a screening result and does not establish aetiology.`;
+        },
+        footer: `<p><strong>Reference:</strong> McGahuey CA et al. (2000). <em>Journal of Sex &amp; Marital Therapy</em>, 26(1), 25–38. <a href="https://doi.org/10.1080/009262300278623" target="_blank" rel="noopener noreferrer">Original study</a> · <a href="https://depts.washington.edu/psychres/wordpress/wp-content/uploads/2017/09/asex_scale.pdf" target="_blank" rel="noopener noreferrer">Questionnaire</a>.</p><p>Criteria: total ≥19, OR any one item ≥5, OR at least three items ≥4. Count only one version of item 3. Screening supports clinical assessment; it does not establish a diagnosis or cause.</p>`
     }
 };
 
@@ -2377,6 +2509,16 @@ function openScreeningTool(tool) {
     tool.questions.forEach(q => {
         const qOptions = q.options || tool.options;
         const qFormat = q.format || tool.format;
+        if (qFormat === 'choices') {
+            const row = el('fieldset', { class: 's-q-row s-choices', 'data-sqid': String(q.id) });
+            row.innerHTML = `
+                <legend class="s-choice-question"><span class="s-q-num">${String(q.id).padStart(2, '0')}</span><span class="s-q-text">${q.text}</span></legend>
+                ${q.variants ? `<div class="s-question-variant"><label for="sq${q.id}-variant">Item ${q.id} version</label><select id="sq${q.id}-variant" data-question-variant="${q.id}"><option value="">Choose the applicable question…</option>${q.variants.map(v => `<option value="${v.value}">${v.label}</option>`).join('')}</select></div>` : ''}
+                <div class="s-choice-options">${qOptions.map(opt => `<label class="s-choice-option"><input type="radio" name="sq${q.id}" value="${opt.value}" id="sq${q.id}_${opt.value}"${q.variants ? ' disabled' : ''}><span>${opt.score}. ${opt.label}</span></label>`).join('')}</div>
+            `;
+            qTable.appendChild(row);
+            return;
+        }
         if (q.columnLabels && q.columnLabels.length) {
             const qHeader = el('div', { class: `s-q-header s-${qFormat}` });
             qHeader.innerHTML = `<div></div><div></div>${q.columnLabels.map(l => `<div class="s-q-col-label">${l}</div>`).join('')}`;
@@ -2410,6 +2552,19 @@ function openScreeningTool(tool) {
 
     const qt = $('#s-q-table');
     qt.addEventListener('change', e => {
+        if (e.target.matches('select[data-question-variant]')) {
+            const qid = Number(e.target.dataset.questionVariant);
+            if (!sState.variants) sState.variants = {};
+            sState.variants[qid] = e.target.value;
+            delete sState.answers[qid];
+            const row = $(`.s-q-row[data-sqid="${qid}"]`);
+            row.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+            sUpdateMobileSelection(qid, '');
+            sSyncQuestionVariants();
+            sScreeningSave();
+            sScreeningRecompute();
+            return;
+        }
         if (!e.target.matches('input[type="radio"]')) return;
         const qid = parseInt(e.target.name.replace('sq', ''));
         sState.answers[qid] = e.target.value;
@@ -2431,7 +2586,19 @@ function openScreeningTool(tool) {
     });
 
     sScreeningLoadState();
+    sSyncQuestionVariants();
     sScreeningRecompute();
+}
+
+function sSyncQuestionVariants() {
+    for (const q of sActiveTool.questions) {
+        if (!q.variants) continue;
+        const row = $(`.s-q-row[data-sqid="${q.id}"]`);
+        const variant = q.variants.find(v => v.value === (sState.variants || {})[q.id]);
+        row.querySelector('select').value = variant ? variant.value : '';
+        row.querySelector('.s-q-text').textContent = variant ? variant.text : q.text;
+        row.querySelectorAll('input[type="radio"]').forEach(r => r.disabled = !variant);
+    }
 }
 
 function sUpdateMobileSelection(qid, val) {
@@ -2463,15 +2630,16 @@ function sScreeningRecompute() {
     if (!sActiveTool) return;
     const result = sScreeningCompute();
     const { score, band, endorsed } = result;
-    const answered = Object.keys(sState.answers).length;
+    const answered = result.answered ?? Object.keys(sState.answers).length;
     const total = sActiveTool.questions.length;
+    const complete = result.complete ?? (answered === total);
 
     const numEl = $('#s-score-num'), progEl = $('#s-score-progress'), badge = $('#s-score-badge');
-    if (numEl) numEl.textContent = score;
+    if (numEl) numEl.textContent = score == null ? '—' : score;
     if (progEl) progEl.textContent = `${answered} of ${total} answered`;
     if (badge) {
         badge.classList.remove('warn', 'err');
-        if (answered === total) {
+        if (complete) {
             if (band === 'elevated') badge.classList.add('err');
             else if (band === 'indeterminate') badge.classList.add('warn');
         }
@@ -2483,7 +2651,7 @@ function sScreeningRecompute() {
     });
 
     const panel = $('#s-result'), insertArea = $('#s-insert-area');
-    if (answered === total) {
+    if (complete) {
         if (panel) {
             panel.className = `s-result show s-${band}`;
             const eyebrow = band === 'elevated'
@@ -2515,20 +2683,26 @@ function sScreeningRecompute() {
 
 function sDoInsert(sectionId) {
     const result = sScreeningCompute();
+    const complete = result.complete ?? (Object.keys(sState.answers).length === sActiveTool.questions.length);
+    if (!complete) { toast('complete all items before inserting'); return; }
     const { score, band, endorsed } = result;
     doInsert(sectionId, sActiveTool.opaProse(score, band, endorsed, result));
     toast('inserted into clinical summary');
 }
 
+function sScreeningStorageKey() {
+    return sActiveTool.storageKey || `screening-state-${sActiveTool.slug}-v1`;
+}
+
 function sScreeningSave() {
     if (!sActiveTool) return;
-    try { localStorage.setItem(`screening-state-${sActiveTool.slug}-v1`, JSON.stringify(sState)); } catch(e) {}
+    try { localStorage.setItem(sScreeningStorageKey(), JSON.stringify(sState)); } catch(e) {}
 }
 
 function sScreeningLoadState() {
     if (!sActiveTool) return;
     try {
-        const raw = localStorage.getItem(`screening-state-${sActiveTool.slug}-v1`);
+        const raw = localStorage.getItem(sScreeningStorageKey());
         if (!raw) return;
         const loaded = JSON.parse(raw);
         sState = { ...sState, ...loaded };
@@ -2546,13 +2720,14 @@ function sScreeningLoadState() {
 
 function sScreeningReset() {
     sState = { toolSlug: sActiveTool.slug, answers: {}, initials: '', date: new Date().toISOString().split('T')[0], clinician: '' };
-    try { localStorage.removeItem(`screening-state-${sActiveTool.slug}-v1`); } catch(e) {}
+    try { localStorage.removeItem(sScreeningStorageKey()); } catch(e) {}
     document.querySelectorAll('#s-q-table input[type="radio"]').forEach(r => r.checked = false);
     document.querySelectorAll('#s-q-table .s-q-options-mobile label').forEach(l => l.classList.remove('selected'));
     const iEl = $('#s-initials'), dEl = $('#s-date'), cEl = $('#s-clinician');
     if (iEl) iEl.value = '';
     if (dEl) dEl.value = sState.date;
     if (cEl) cEl.value = '';
+    sSyncQuestionVariants();
     sScreeningRecompute();
 }
 
