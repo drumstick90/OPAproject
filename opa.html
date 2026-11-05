@@ -1061,6 +1061,7 @@ textarea.field:focus {
 }
 .s-q-header.s-likert4 { grid-template-columns: 26px 1fr repeat(4, 48px); }
 .s-q-header.s-binary  { grid-template-columns: 26px 1fr 60px 60px; }
+.s-q-header.s-checklist3 { grid-template-columns: 26px 1fr repeat(3, 76px); }
 
 .s-q-col-label {
     font-family: var(--mono); font-size: 9px; letter-spacing: .04em;
@@ -1074,6 +1075,7 @@ textarea.field:focus {
 }
 .s-q-row.s-likert4 { grid-template-columns: 26px 1fr repeat(4, 48px); }
 .s-q-row.s-binary  { grid-template-columns: 26px 1fr 60px 60px; }
+.s-q-row.s-checklist3 { grid-template-columns: 26px 1fr repeat(3, 76px); }
 .s-q-row:hover { background: var(--surf); }
 .s-q-row.s-answered { background: rgba(29,122,58,.04); }
 
@@ -1083,6 +1085,11 @@ textarea.field:focus {
 }
 .s-q-row.s-answered .s-q-num { color: var(--ok); }
 .s-q-text { font-size: 13px; line-height: 1.4; color: var(--ink); padding-right: 4px; }
+.s-category-head {
+    margin-top: 14px; padding: 7px 0 6px; border-bottom: 1px solid var(--border);
+    font-family: var(--mono); font-size: 10px; letter-spacing: .08em;
+    text-transform: lowercase; color: var(--accent);
+}
 .s-criterion {
     display: block; font-size: 10.5px; color: var(--ink-3);
     font-style: italic; margin-top: 2px;
@@ -1160,9 +1167,10 @@ textarea.field:focus {
 
 @media (max-width: 720px) {
     .s-q-header.s-likert4 .s-q-col-label,
-    .s-q-header.s-binary .s-q-col-label { display: none; }
-    .s-q-header.s-likert4, .s-q-header.s-binary { grid-template-columns: 26px 1fr; }
-    .s-q-row.s-likert4, .s-q-row.s-binary { grid-template-columns: 26px 1fr; }
+    .s-q-header.s-binary .s-q-col-label,
+    .s-q-header.s-checklist3 .s-q-col-label { display: none; }
+    .s-q-header.s-likert4, .s-q-header.s-binary, .s-q-header.s-checklist3 { grid-template-columns: 26px 1fr; }
+    .s-q-row.s-likert4, .s-q-row.s-binary, .s-q-row.s-checklist3 { grid-template-columns: 26px 1fr; }
     .s-q-row .s-q-cell { display: none; }
     .s-q-options-mobile { display: flex; }
     .s-meta { grid-template-columns: 1fr; }
@@ -2436,8 +2444,71 @@ const SCREENING_TOOLS = {
             return `The patient completed the Arizona Sexual Experience Scale (ASEX), scoring ${score}/30 (range 5–30; higher scores indicate greater sexual dysfunction). ${interpretation} Item scores: ${items}. This is a screening result and does not establish aetiology.`;
         },
         footer: `<p><strong>Reference:</strong> McGahuey CA et al. (2000). <em>Journal of Sex &amp; Marital Therapy</em>, 26(1), 25–38. <a href="https://doi.org/10.1080/009262300278623" target="_blank" rel="noopener noreferrer">Original study</a> · <a href="https://depts.washington.edu/psychres/wordpress/wp-content/uploads/2017/09/asex_scale.pdf" target="_blank" rel="noopener noreferrer">Questionnaire</a>.</p><p>Criteria: total ≥19, OR any one item ≥5, OR at least three items ≥4. Count only one version of item 3. Screening supports clinical assessment; it does not establish a diagnosis or cause.</p>`
+    },
+    cyclothymia: {
+        slug: 'cyclothymia',
+        scoreLabel: 'present',
+        scoreDenominator: 15,
+        title: { plain: 'cyclo', em: 'thymia' },
+        subtitle: 'Historical clinical criteria checklist for cyclothymic temperament',
+        instructions: `<strong>Instructions.</strong> For each criterion, select <em>Present</em>, <em>Absent</em>, or <em>Unclear / not assessed</em>. This historical checklist has no validated score or diagnostic cut-off; use it to structure longitudinal assessment and interpret it against current diagnostic criteria.`,
+        format: 'checklist3',
+        options: [
+            { value: 'present', label: 'Present', short: 'Present' },
+            { value: 'absent', label: 'Absent', short: 'Absent' },
+            { value: 'unclear', label: 'Unclear / not assessed', short: 'Unclear' }
+        ],
+        columnLabels: ['Present', 'Absent', 'Unclear<br>or not assessed'],
+        questions: [
+            { id: 1, category: 'General', text: "Onset in teens or early adulthood" },
+            { id: 2, category: 'General', text: "Clinical presentation as a personality disorder; the patient may be unaware of distinct “moods”" },
+            { id: 3, category: 'General', text: "Short cycles—usually days—which recur irregularly, with infrequent euthymic periods" },
+            { id: 4, category: 'General', text: "May not reach a full depressive or hypomanic syndrome during any one cycle, but the full range of affective manifestations occurs at different times" },
+            { id: 5, category: 'General', text: "“Endogenous” mood changes, often waking with the mood already present" },
+            { id: 6, category: 'Biphasic course', text: "Hypersomnia alternating with decreased need for sleep (intermittent insomnia may also occur)" },
+            { id: 7, category: 'Biphasic course', text: "Shaky self-esteem alternating between lack of self-confidence and naïve or grandiose overconfidence" },
+            { id: 8, category: 'Biphasic course', text: "Periods of mental confusion and apathy alternating with sharpened and creative thinking" },
+            { id: 9, category: 'Biphasic course', text: "Marked unevenness in the quantity and quality of productivity, often associated with unusual working hours" },
+            { id: 10, category: 'Biphasic course', text: "Uninhibited people-seeking (potentially including hypersexuality) alternating with introverted self-absorption" },
+            { id: 11, category: 'Behavioural manifestations', text: "Irritable, angry or explosive outbursts that alienate loved ones" },
+            { id: 12, category: 'Behavioural manifestations', text: "Episodic promiscuity; repeated conjugal or romantic failure" },
+            { id: 13, category: 'Behavioural manifestations', text: "Frequent shifts in line of work, study, interest or future plans" },
+            { id: 14, category: 'Behavioural manifestations', text: "Resort to alcohol and drug abuse as a means for self-treatment or augmenting excitement" },
+            { id: 15, category: 'Behavioural manifestations', text: "Occasional financial extravagance" }
+        ],
+        computeResult: function(state) {
+            const answers = state.answers || {};
+            const present = this.questions.filter(q => answers[q.id] === 'present');
+            const absent = this.questions.filter(q => answers[q.id] === 'absent');
+            const unclear = this.questions.filter(q => answers[q.id] === 'unclear');
+            const answered = present.length + absent.length + unclear.length;
+            return {
+                score: present.length,
+                band: 'indeterminate',
+                complete: answered === this.questions.length,
+                answered,
+                endorsed: present,
+                presentCount: present.length,
+                absentCount: absent.length,
+                unclearCount: unclear.length
+            };
+        },
+        bandHeadline: (score, band, result) => `${score}/15 criteria marked present · no diagnostic cut-off`,
+        bandBody: (score, band, endorsed, result) => {
+            const present = result.presentCount;
+            const absent = result.absentCount;
+            const unclear = result.unclearCount;
+            const presentText = present === 1 ? 'criterion is' : 'criteria are';
+            return `<p>${present}/15 ${presentText} marked present; ${absent} marked absent; ${unclear} unclear or not assessed.</p><p>These are historical descriptive criteria attributed to Akiskal et al. (1979). They do not establish cyclothymia and should be interpreted using current diagnostic criteria, longitudinal history, collateral information, and exclusion of substance or medical causes.</p>`;
+        },
+        endorsedRender: (endorsed) => endorsed.map(e => `${e.category} — ${e.text}`),
+        opaProse: (score, band, endorsed, result) => {
+            const presentText = endorsed.length ? ` Criteria marked present: ${sListJoin(endorsed.map(e => `${e.category}: ${e.text}`), '; ')}.` : '';
+            return `The patient completed the cyclothymia clinical criteria checklist today: ${score}/15 criteria marked present, ${result.absentCount} marked absent, and ${result.unclearCount} unclear or not assessed. This historical checklist has no validated diagnostic cut-off and does not establish a diagnosis; interpret it against current diagnostic criteria and the longitudinal clinical picture.${presentText}`;
+        },
+        footer: `<p><strong>Source:</strong> Akiskal HS, Khani MK, Scott-Strauss A. <em>Cyclothymic temperamental disorders.</em> <em>Psychiatric Clinics of North America</em>. 1979;2:527–554. Criteria reproduced/adapted from the supplied reference.</p><p>This is a clinical checklist, not a validated diagnostic instrument or a substitute for current diagnostic assessment.</p>`
     }
-};
+;
 
 let sActiveTool = null;
 let sState = null;
@@ -2470,7 +2541,7 @@ function openScreeningTool(tool) {
     const hdr = el('div', { class: 's-header' });
     hdr.appendChild(el('div', { class: 's-title' }, `${tool.title.plain}${tool.title.em}`));
     const badge = el('div', { class: 's-score-badge', id: 's-score-badge' });
-    badge.appendChild(el('div', { class: 's-score-label' }, 'score'));
+    badge.appendChild(el('div', { class: 's-score-label' }, tool.scoreLabel || 'score'));
     badge.appendChild(el('div', { class: 's-score-value' },
         el('span', { id: 's-score-num' }, '0'),
         el('span', { class: 's-score-denom' }, `/${tool.scoreDenominator || tool.questions.length}`)
@@ -2506,7 +2577,12 @@ function openScreeningTool(tool) {
         hRow.innerHTML = `<div></div><div></div>${tool.columnLabels.map(l => `<div class="s-q-col-label">${l}</div>`).join('')}`;
         qTable.appendChild(hRow);
     }
+    let currentCategory = null;
     tool.questions.forEach(q => {
+        if (q.category && q.category !== currentCategory) {
+            currentCategory = q.category;
+            qTable.appendChild(el('div', { class: 's-category-head' }, q.category));
+        }
         const qOptions = q.options || tool.options;
         const qFormat = q.format || tool.format;
         if (qFormat === 'choices') {
